@@ -14,7 +14,7 @@ HEIGHT = monitor_info.current_h
 '''
 
 WIDTH = 1280 #64x20
-HEIGHT = 1088 #64x17
+HEIGHT = 960 #64x15
 
 BG_IMG = 'img/bg/bg.jpg'
 
@@ -47,9 +47,7 @@ level_map = [
     '                    ',
     '                    ',
     '                    ',
-    '                    ',
-    '                    ',
-    '                    ',
+    '                    '
 ]
 
 

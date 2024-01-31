@@ -1,5 +1,5 @@
 import pygame
-from pygame.sprite import _Group
+#from pygame.sprite import _Group
 from settings import WIDTH,HEIGHT
 from support import import_folder #segít a képfájlok rendszerezésében
 

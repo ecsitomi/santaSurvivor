@@ -2,7 +2,6 @@ import pygame, math
 from tiles import Tile
 from support import import_folder
 from settings import WIDTH,HEIGHT
-from level import player_pos
 from random import randint
 
 
@@ -55,5 +54,6 @@ class Enemy(Tile):
     def update(self, player_pos): #játékos folyamatos frissítése
         self.get_status()
         self.animate()
+        player_pos = self.level.player.sprite.rect.center
         self.move(player_pos)
         

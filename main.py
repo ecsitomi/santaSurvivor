@@ -14,13 +14,13 @@ if __name__ == "__main__":
     bg_surf = pygame.image.load(BG_IMG).convert_alpha()
     bg_rect = bg_surf.get_rect(bottomleft=(0,HEIGHT))
 
-    level=Level(screen)
+    level=Level(level_map,screen)
 
     #futtatás
     running = True
     while running:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:                               
+            if event.type == pygame.QUIT:
                 running = False
 
         #háttérszín/kép megjelenítés
