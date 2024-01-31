@@ -10,9 +10,9 @@ class Level:
         self.display_surface = surface # játékablak a main-ben meghatározottak szerint
 
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
-        self.terrain_tiles = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.other_tiles = pygame.sprite.Group()
+        self.colliderect_check = False #ütközés vizsgálata
 
         # háttérkép betöltése és méretezése
         self.bg_surf = pygame.image.load(BG_IMG).convert_alpha()
@@ -40,11 +40,8 @@ class Level:
                 if tile_type in others:
                     tile = OtherTile(tile_size, x, y, tile_type)
                     self.other_tiles.add(tile)
-                elif tile_type != ' ':
-                    tile = TerrainTile(tile_size, x, y, tile_type)
-                    self.terrain_tiles.add(tile)
 
-    def movement_collision(self):
+    def movement(self): #mozgás
         player = self.player.sprite
         player.rect.x += player.direction.x * player.speed #mozgás -> irány*sebesség
         player.rect.y+=player.direction.y*player.speed 
@@ -59,11 +56,53 @@ class Level:
         if player.rect.bottom > HEIGHT: #ha alsó oldalról kilép
             player.rect.bottom = HEIGHT #akkor ne lépjen ki
 
+        
+    #HIBAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!
+    
+    def horizontal_collision_check(self):
+        player = self.player.sprite
+        if player.direction.x != 0 or player.direction.y != 0:
+            if not self.colliderect_check:
+                for sprite in self.other_tiles.sprites():
+                    if sprite.rect.colliderect(player.rect):
+                        self.colliderect_check = True
+                        if player.direction.x < 0 and player.rect.left < sprite.rect.right:
+                            player.rect.left = sprite.rect.right
+                            player.speed = 0
+
+                        if player.direction.x > 0 and player.rect.right > sprite.rect.left:
+                            player.rect.right = sprite.rect.left
+                            player.speed = 0
+
+
+    def vertical_collision_check(self):
+        player = self.player.sprite
+        if player.direction.y != 0:
+             for sprite in self.other_tiles.sprites():
+                if not self.colliderect_check:
+                    self.colliderect_check = True
+                    if sprite.rect.colliderect(player.rect):
+                        if player.direction.y < 0 and player.rect.top < sprite.rect.bottom:
+                            player.rect.top = sprite.rect.bottom
+                            player.speed = 0
+
+                        if player.direction.y > 0 and player.rect.bottom > sprite.rect.top:
+                            player.rect.bottom = sprite.rect.top
+                            player.speed = 0
+
+            # A break után, a cikluson kívül, csak egyetlen alkalommal állítsa vissza a sebességet
+        player.speed = 8
+        self.colliderect_check = False
+
+
+
+
     # futtatás
     def run(self):
-        self.movement_collision()  #mozgás & ütközések
+        self.movement()  #mozgás & ütközések
+        self.horizontal_collision_check()
+        self.vertical_collision_check()
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
-        self.terrain_tiles.draw(self.display_surface)  # játékablakban
         self.enemies.update()  # ellenség update
         self.enemies.draw(self.display_surface)  # ellenség kirajzolása
         self.other_tiles.update()  # díszítőelemek frissítése

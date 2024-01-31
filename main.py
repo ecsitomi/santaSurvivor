@@ -10,7 +10,7 @@ if __name__ == "__main__":
     pygame.display.set_caption('Santa Survivor') #cím
     clock = pygame.time.Clock() #időzítő
 
-    level=Level(level_map,screen)
+    level=Level(level_map,screen) #szint példányosítása
 
     #futtatás
     running = True

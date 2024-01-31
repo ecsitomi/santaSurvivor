@@ -15,6 +15,6 @@ class TerrainTile(Tile): #terrain csempe
 class OtherTile(Tile): #díszítőelemek
     def __init__(self,size,x,y,type):
         super().__init__(size,x,y)
-        self.image=pygame.image.load(f'img/others/{others[type]}.png').convert_alpha()
+        self.image=pygame.image.load(f'img/tiles/{others[type]}.png').convert_alpha()
         offset_y=y+size
         self.rect=self.image.get_rect(bottomleft=(x,offset_y))
