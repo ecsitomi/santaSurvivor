@@ -7,8 +7,9 @@ from settings import tile_size, others, WIDTH, HEIGHT, BG_IMG
 # inicializálás
 class Level:
     def __init__(self, level_data, surface):
-        self.display_surface = surface
-        self.player = pygame.sprite.GroupSingle()
+        self.display_surface = surface # játékablak a main-ben meghatározottak szerint
+
+        self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.terrain_tiles = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.other_tiles = pygame.sprite.Group()
@@ -16,19 +17,18 @@ class Level:
         # háttérkép betöltése és méretezése
         self.bg_surf = pygame.image.load(BG_IMG).convert_alpha()
         self.bg_rect = self.bg_surf.get_rect()
-
         self.bg_surf = self.scale_background()
 
-        self.setup_level(level_data)
+        self.setup_level(level_data) # pálya betöltése
 
     def scale_background(self):
-        # Az eredeti háttérkép méretének lekérdezése
-        original_width, original_height = self.bg_surf.get_size()
+        original_width, original_height = self.bg_surf.get_size()  # Az eredeti háttérkép méretének lekérdezése
+
         # Az új méretek kiszámolása az ablak méretéhez igazítva
         new_height = HEIGHT
         new_width = int(original_width * (HEIGHT / original_height))
-        # Háttérkép méretének beállítása
-        return pygame.transform.scale(self.bg_surf, (new_width, new_height))
+        
+        return pygame.transform.scale(self.bg_surf, (new_width, new_height)) # Háttérkép méretének beállítása és visszaadása
 
     def setup_level(self, layout):
         player_sprite = Player()
@@ -44,20 +44,24 @@ class Level:
                     tile = TerrainTile(tile_size, x, y, tile_type)
                     self.terrain_tiles.add(tile)
 
-    def horizontal_movement_collision(self):
+    def movement_collision(self):
         player = self.player.sprite
-        player.rect.x += player.direction.x * player.speed
+        player.rect.x += player.direction.x * player.speed #mozgás -> irány*sebesség
+        player.rect.y+=player.direction.y*player.speed 
 
-        for sprite in self.terrain_tiles.sprites():
-            if sprite.rect.colliderect(player.rect):
-                if player.direction.x < 0:
-                    player.rect.left = sprite.rect.right
-                if player.direction.x > 0:
-                    player.rect.right = sprite.rect.left
+        #mozgás korlátozása
+        if player.rect.right > WIDTH: #ha jobb oldalról kilép
+            player.rect.right = WIDTH #akkor ne lépjen ki
+        if player.rect.left < 0: #ha bal oldalról kilép
+            player.rect.left = 0 #akkor ne lépjen ki
+        if player.rect.top < 0: #ha felső oldalról kilép
+            player.rect.top = 0 #akkor ne lépjen ki
+        if player.rect.bottom > HEIGHT: #ha alsó oldalról kilép
+            player.rect.bottom = HEIGHT #akkor ne lépjen ki
 
     # futtatás
     def run(self):
-        self.horizontal_movement_collision()  # ütközések
+        self.movement_collision()  #mozgás & ütközések
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
         self.terrain_tiles.draw(self.display_surface)  # játékablakban
         self.enemies.update()  # ellenség update

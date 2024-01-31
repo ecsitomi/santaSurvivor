@@ -14,7 +14,6 @@ class Player(pygame.sprite.Sprite):
         self.rect=self.image.get_rect(center=(WIDTH/2,HEIGHT/2)) #kezdő pozíció
         self.direction=pygame.math.Vector2(0,0) #x,y irányú vektoriális elmozdulás (lényeg, csak irányt mutat)
         self.speed=8 #mozgás sebessége
-        self.on_ground=True #földön van e
         self.counter=0 #számláló
         self.status='idle' #kezdő státusz
         self.facing_right=True #jobbranéz
@@ -36,8 +35,15 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x=0 #ha nincs elmozdulás nincs iránymódosítás
 
+        if keys[pygame.K_UP] or keys[pygame.K_w]: #fel
+            self.direction.y=-1 #iránymódosítás felfelé
+        elif keys[pygame.K_DOWN] or keys[pygame.K_s]: #le
+            self.direction.y=1
+        else:
+            self.direction.y=0 #ha nincs elmozdulás nincs iránymódosítás
+
     def get_status(self): #karakter státusz változása
-        if self.direction.x!=0: #vízszintes irányú mozgás
+        if self.direction.x!=0 or self.direction.y!=0: #irányú mozgás
                 self.status='run' #futás
         else:
             self.status='idle' #más esetben áll

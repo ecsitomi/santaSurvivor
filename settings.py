@@ -4,10 +4,10 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 FPS = 60
-WIDTH = 1280 #64x20
-HEIGHT = 960 #64x15
 BG_COLOR = WHITE
 BG_IMG = 'img/bg/bg.jpg'
+WIDTH = 1280 #64x20
+HEIGHT = 960 #64x15
 
 ''' ABLAK MONITORHOZ IGAZÍTÁSA
 monitor_info = pygame.display.Info() #lekérdezi mekkora a monitor mérete
