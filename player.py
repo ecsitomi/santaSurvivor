@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
         self.animations={'idle':[],'run':[],'death':[]} #animációk szótára
         self.import_character_assets() #karakter képek betöltése
         self.frame_index=0 #képek indexeinek száma
-        self.animation_speed=0.15 #indexelés sebessége
+        self.animation_speed=0.3 #indexelés sebessége
         self.image=self.animations['idle'][self.frame_index] #kezdő kép
         self.rect=self.image.get_rect(center=(WIDTH/2,HEIGHT/2)) #kezdő pozíció
         self.direction=pygame.math.Vector2(0,0) #x,y irányú vektoriális elmozdulás (lényeg, csak irányt mutat)
