@@ -12,7 +12,8 @@ class Level:
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.enemies = pygame.sprite.Group()
         self.other_tiles = pygame.sprite.Group()
-        self.colliderect_check = False #ütközés vizsgálata
+        self.stop_collide_horizont = False #ütközés vizsgálata
+        self.stop_collide_vertical = False
 
         # háttérkép betöltése és méretezése
         self.bg_surf = pygame.image.load(BG_IMG).convert_alpha()
@@ -61,38 +62,40 @@ class Level:
     
     def horizontal_collision_check(self):
         player = self.player.sprite
-        if player.direction.x != 0 or player.direction.y != 0:
-            if not self.colliderect_check:
+        if player.direction.x != 0:
+            if not self.stop_collide_horizont:
                 for sprite in self.other_tiles.sprites():
                     if sprite.rect.colliderect(player.rect):
-                        self.colliderect_check = True
+                        self.stop_collide_vertical = True
                         if player.direction.x < 0 and player.rect.left < sprite.rect.right:
                             player.rect.left = sprite.rect.right
-                            player.speed = 0
+                            player.speed = 1
 
                         if player.direction.x > 0 and player.rect.right > sprite.rect.left:
                             player.rect.right = sprite.rect.left
-                            player.speed = 0
+                            player.speed = 1
+                    else:
+                        player.speed = 8
+                        self.stop_collide_vertical = False
 
 
     def vertical_collision_check(self):
         player = self.player.sprite
         if player.direction.y != 0:
-             for sprite in self.other_tiles.sprites():
-                if not self.colliderect_check:
-                    self.colliderect_check = True
+            if not self.stop_collide_vertical:
+                for sprite in self.other_tiles.sprites():
                     if sprite.rect.colliderect(player.rect):
+                        self.stop_collide_horizont = True
                         if player.direction.y < 0 and player.rect.top < sprite.rect.bottom:
                             player.rect.top = sprite.rect.bottom
-                            player.speed = 0
+                            player.speed = 1
 
                         if player.direction.y > 0 and player.rect.bottom > sprite.rect.top:
                             player.rect.bottom = sprite.rect.top
-                            player.speed = 0
-
-            # A break után, a cikluson kívül, csak egyetlen alkalommal állítsa vissza a sebességet
-        player.speed = 8
-        self.colliderect_check = False
+                            player.speed = 1
+                    else:
+                        player.speed = 8
+                        self.stop_collide_horizont = False
 
 
 
