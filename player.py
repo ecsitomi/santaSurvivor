@@ -22,11 +22,11 @@ class Player(pygame.sprite.Sprite):
     def import_character_assets(self): #hogyan jussunk el a képekhez
         character_path='img/santa/' #hol a karakter könyvtár
         for animation in self.animations.keys(): #animation szótárban hozzá akarom rendelni a keys-eket
-            full_path=character_path+animation
+            full_path=character_path+animation #kép teljes elérési útja
             self.animations[animation]=import_folder(full_path) #ez a függvény visszaad egy listát a megfelelő animációhoz a szótárban
 
     def get_input(self): #gombnyomásra mit tegyen
-        keys=pygame.key.get_pressed()
+        keys=pygame.key.get_pressed() #gomb változó
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]: #jobb
             self.direction.x=1 #iránymódosítás
             self.facing_right=True #jobbranéz
@@ -46,13 +46,13 @@ class Player(pygame.sprite.Sprite):
         animation=self.animations[self.status]
         self.frame_index+=self.animation_speed #indexelés növelése
         if self.frame_index>=len(animation): #hogy ne indexeljünk túl
-            self.frame_index=0
+            self.frame_index=0 #visszaállítás
         image=animation[int(self.frame_index)] #státusznak megfelelő kép indexelve
         if self.facing_right: #ha jobbranéz
             self.image=image #nem kell tükrözni
         else:
             flipped_image=pygame.transform.flip(image,True,False) #kép/horizontális/vertikális tükrözés
-            self.image=flipped_image
+            self.image=flipped_image #tükrözött kép
 
     def update(self): #játékos folyamatos frissítése
         self.get_input() #milyen billenytyű parancsot kapott
