@@ -18,6 +18,7 @@ class Enemy(pygame.sprite.Sprite):
         self.status = 'idle' # kezdő státusz
         self.facing_right = True # jobbranéz
         self.death=False
+        self.attack=False
 
     def import_character_assets(self): # hogyan jussunk el a képekhez
         character_path = 'img/enemy/' # hol a karakter könyvtár
@@ -26,14 +27,14 @@ class Enemy(pygame.sprite.Sprite):
             self.animations[animation] = import_folder(full_path) # ez a függvény visszaad egy listát a megfelelő animációhoz a szótárban
 
     def get_status(self): # karakter státusz változása
-        if self.direction.x != 0: # vízszintes irányú mozgás
+        if self.direction.x != 0 and not self.attack: # vízszintes irányú mozgás
             self.status = 'walk' # futás
+        elif self.attack:
+            self.status = 'attack' #támadás
+        elif self.death: 
+            self.status='death' #meghalt
         else:
             self.status = 'idle' # más esetben áll
-
-        if self.death==True:
-            self.status='death'
-
 
     def animate(self): # státusznak megfelelő animálás
         animation = self.animations[self.status]

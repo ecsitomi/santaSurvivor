@@ -83,6 +83,14 @@ class Level:
             zombi.rect.x += zombi.direction.x * zombi.speed
             zombi.rect.y += zombi.direction.y * zombi.speed
 
+    def zombi_attack(self):
+        player = self.player.sprite
+        for zombi in self.enemies:
+            if abs(player.rect.x - zombi.rect.x) < 100 and abs(player.rect.y - zombi.rect.y) < 100:
+                zombi.attack=True
+            else:
+                zombi.attack=False
+
     #HIBÁS!!!!!!!!!!!!!!!!!!
     '''
     def tile_collision(self): #ütközések a csempékkel
@@ -122,6 +130,7 @@ class Level:
         self.add_zombi() #zombi hozzáadása
         self.enemies.draw(self.display_surface) #zombi kirajzolása
         self.zombi_move() #zombi mozgása
+        self.zombi_attack()
         
         #AZ ÜTKÖZÉS HIBÁS,EZÉRT A CSEMPÉKET SEM RAJZOLJUK KI
         #self.tile_collision() #ütközések a csempékkel
