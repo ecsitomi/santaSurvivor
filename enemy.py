@@ -13,7 +13,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.animations['idle'][self.frame_index] # kezdő kép
         self.rect = self.image.get_rect(center=(x, y)) # kezdő pozíció
         self.direction = pygame.math.Vector2(0, 0) # x, y irányú vektoriális elmozdulás (lényeg, csak irányt mutat)
-        self.speed = 7 # mozgás sebessége
+        self.speed = 5 # mozgás sebessége
         self.counter = 0 # számláló
         self.status = 'idle' # kezdő státusz
         self.facing_right = True # jobbranéz

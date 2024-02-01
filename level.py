@@ -1,18 +1,21 @@
 import pygame, random, math
 from player import Player
 from enemy import Enemy
-from tiles import Tile, TerrainTile, OtherTile
+from tiles import OtherTile
 from settings import tile_size, others, WIDTH, HEIGHT, BG_IMG
+from bullet import Bullet
 
 # inicializálás
 class Level:
     def __init__(self, level_data, surface):
         self.display_surface = surface # játékablak a main-ben meghatározottak szerint
         self.counter=0
+        self.attack_counter=0
 
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.enemies = pygame.sprite.Group()
         self.other_tiles = pygame.sprite.Group()
+        self.bullets = pygame.sprite.Group()
 
         # háttérkép betöltése és méretezése
         self.bg_surf = pygame.image.load(BG_IMG).convert_alpha()
@@ -86,10 +89,40 @@ class Level:
     def zombi_attack(self):
         player = self.player.sprite
         for zombi in self.enemies:
-            if abs(player.rect.x - zombi.rect.x) < 100 and abs(player.rect.y - zombi.rect.y) < 100:
+            if abs(player.rect.x - zombi.rect.x) < 150 and abs(player.rect.y - zombi.rect.y) < 150:
                 zombi.attack=True
             else:
                 zombi.attack=False
+
+            if zombi.rect.colliderect(player.rect):
+                player.health-=1
+
+    def santa_attack(self):
+        self.attack_counter += 1
+        player = self.player.sprite
+        if len(self.enemies)!=0:
+            if self.attack_counter % 75 == 0:
+                bullet = Bullet(player.rect.centerx, player.rect.centery)
+                self.bullets.add(bullet)
+
+        for bullet in self.bullets:
+            target = random.choice(self.enemies.sprites())
+            angle = math.atan2(target.rect.centery - player.rect.centery, target.rect.centerx - player.rect.centerx)
+            bullet.direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+            bullet.rect.x += bullet.direction.x * bullet.speed
+            bullet.rect.y += bullet.direction.y * bullet.speed
+            bullet.update()
+
+        # Ütközések kezelése
+        for enemy in self.enemies:
+            if pygame.sprite.spritecollide(enemy, self.bullets, True):
+                enemy.kill()
+
+        self.bullets.draw(self.display_surface)
+
+
+
+                
 
     #HIBÁS!!!!!!!!!!!!!!!!!!
     '''
@@ -131,6 +164,9 @@ class Level:
         self.enemies.draw(self.display_surface) #zombi kirajzolása
         self.zombi_move() #zombi mozgása
         self.zombi_attack()
+        self.santa_attack()
+
+        
         
         #AZ ÜTKÖZÉS HIBÁS,EZÉRT A CSEMPÉKET SEM RAJZOLJUK KI
         #self.tile_collision() #ütközések a csempékkel

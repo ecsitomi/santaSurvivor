@@ -1,5 +1,4 @@
 import pygame
-#from pygame.sprite import _Group
 from settings import WIDTH,HEIGHT
 from support import import_folder #segít a képfájlok rendszerezésében
 
@@ -18,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.facing_right=True #jobbranéz
         self.stop_vertical=False
         self.stop_horizontal=False
+        self.health=100 #élet
 
     def import_character_assets(self): #hogyan jussunk el a képekhez
         character_path='img/santa/' #hol a karakter könyvtár
