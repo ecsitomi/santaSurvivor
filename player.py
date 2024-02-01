@@ -14,16 +14,16 @@ class Player(pygame.sprite.Sprite):
         self.rect=self.image.get_rect(center=(WIDTH/2,HEIGHT/2)) #kezdő pozíció
         self.direction=pygame.math.Vector2(0,0) #x,y irányú vektoriális elmozdulás (lényeg, csak irányt mutat)
         self.speed=8 #mozgás sebessége
-        self.counter=0 #számláló
         self.status='idle' #kezdő státusz
         self.facing_right=True #jobbranéz
+        self.stop_vertical=False
+        self.stop_horizontal=False
 
     def import_character_assets(self): #hogyan jussunk el a képekhez
         character_path='img/santa/' #hol a karakter könyvtár
         for animation in self.animations.keys(): #animation szótárban hozzá akarom rendelni a keys-eket
             full_path=character_path+animation #kép teljes elérési útja
-            self.animations[animation]=import_folder(full_path) #ez a függvény visszaad egy listát a megfelelő animációhoz a szótárban
-
+            self.animations[animation]=import_folder(full_path) #ez a függvény visszaad egy listát a megfelelő animációhoz a szótá
     def get_input(self): #gombnyomásra mit tegyen
         keys=pygame.key.get_pressed() #gomb változó
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]: #jobb
