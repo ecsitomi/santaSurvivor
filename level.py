@@ -1,4 +1,4 @@
-import pygame
+import pygame, random, math
 from player import Player
 from enemy import Enemy
 from tiles import Tile, TerrainTile, OtherTile
@@ -8,6 +8,7 @@ from settings import tile_size, others, WIDTH, HEIGHT, BG_IMG
 class Level:
     def __init__(self, level_data, surface):
         self.display_surface = surface # játékablak a main-ben meghatározottak szerint
+        self.counter=0
 
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.enemies = pygame.sprite.Group()
@@ -54,8 +55,36 @@ class Level:
             player.rect.top = 0 
         if player.rect.bottom > HEIGHT: 
             player.rect.bottom = HEIGHT 
+
+    def create_zombi_horizontal(self):
+        x=random.randint(-50,WIDTH+50)
+        y=random.choice([-50,HEIGHT+50])
+        zombi=Enemy(x,y)
+        self.enemies.add(zombi)
+
+    def create_zombi_vertical(self):
+        x=random.choice([-50,WIDTH+50])
+        y=random.randint(-50,HEIGHT+50)
+        zombi=Enemy(x,y)
+        self.enemies.add(zombi)
+    
+    def add_zombi(self): #zombi hozzáadása
+        self.counter+=1
+        if self.counter%100==0:
+            self.create_zombi_horizontal()
+        if self.counter%150==0:
+            self.create_zombi_vertical()
             
+    def zombi_move(self):
+        player_pos = self.player.sprite.rect.center
+        for zombi in self.enemies:
+            angle = math.atan2(player_pos[1] - zombi.rect.centery, player_pos[0] - zombi.rect.centerx)
+            zombi.direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+            zombi.rect.x += zombi.direction.x * zombi.speed
+            zombi.rect.y += zombi.direction.y * zombi.speed
+
     #HIBÁS!!!!!!!!!!!!!!!!!!
+    '''
     def tile_collision(self): #ütközések a csempékkel
         player=self.player.sprite #játékos sprite
         
@@ -80,6 +109,7 @@ class Level:
                 else:
                     player.stop_vertical = False
                     player.stop_horizontal = False
+        '''
 
     #futtatás
     def run(self):
@@ -89,6 +119,9 @@ class Level:
         self.enemies.draw(self.display_surface)  # ellenség kirajzolása
         self.player.update()  # játékos frissítése
         self.player.draw(self.display_surface)  # játékos kirajzolása a (játékablakban)
+        self.add_zombi() #zombi hozzáadása
+        self.enemies.draw(self.display_surface) #zombi kirajzolása
+        self.zombi_move() #zombi mozgása
         
         #AZ ÜTKÖZÉS HIBÁS,EZÉRT A CSEMPÉKET SEM RAJZOLJUK KI
         #self.tile_collision() #ütközések a csempékkel

@@ -24,6 +24,7 @@ class Player(pygame.sprite.Sprite):
         for animation in self.animations.keys(): #animation szótárban hozzá akarom rendelni a keys-eket
             full_path=character_path+animation #kép teljes elérési útja
             self.animations[animation]=import_folder(full_path) #ez a függvény visszaad egy listát a megfelelő animációhoz a szótá
+    
     def get_input(self): #gombnyomásra mit tegyen
         keys=pygame.key.get_pressed() #gomb változó
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]: #jobb
