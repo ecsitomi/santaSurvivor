@@ -105,17 +105,18 @@ class Level:
     def santa_attack(self,weapon_level): #játékos támadása
         self.attack_counter += 1
         player = self.player.sprite
-        if len(self.enemies)==0 and len(self.bullets)!=0:
-            for bullet in self.bullets:
-                bullet.kill()
-        if len(self.enemies)!=0:
-            target = random.choice(self.enemies.sprites()) #véletlen célpont, folyton frissül
-            angle = math.atan2(target.rect.centery - player.rect.centery, target.rect.centerx - player.rect.centerx) #szög folyamatos frissítése
-            direction = pygame.math.Vector2(math.cos(angle), math.sin(angle)) #irány folyamatos frissítése
-            if self.attack_counter % 75 == 0:
-                for i in range(weapon_level):
-                    bullet = Bullet(player.rect.centerx, player.rect.centery, direction) #itt az irány már fix érték lesz
-                    self.bullets.add(bullet)
+        if not player.death:
+            if len(self.enemies)==0 and len(self.bullets)!=0:
+                for bullet in self.bullets:
+                    bullet.kill()
+            if len(self.enemies)!=0:
+                target = random.choice(self.enemies.sprites()) #véletlen célpont, folyton frissül
+                angle = math.atan2(target.rect.centery - player.rect.centery, target.rect.centerx - player.rect.centerx) #szög folyamatos frissítése
+                direction = pygame.math.Vector2(math.cos(angle), math.sin(angle)) #irány folyamatos frissítése
+                if self.attack_counter % 75 == 0:
+                    for i in range(weapon_level):
+                        bullet = Bullet(player.rect.centerx, player.rect.centery, direction) #itt az irány már fix érték lesz
+                        self.bullets.add(bullet)
 
 
         # Ütközések kezelése
@@ -151,6 +152,8 @@ class Level:
         if player.status == 'death':
             for zombi in self.enemies:
                 zombi.status='idle'
+                zombi.speed=0
+            self.trees.empty()
                 
     
 

@@ -15,7 +15,7 @@ class Enemy(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0, 0) # x, y irányú vektoriális elmozdulás (lényeg, csak irányt mutat)
         self.speed = 5 # mozgás sebessége
         self.counter = 0 # számláló
-        self.status = 'idle' # kezdő státusz
+        self.status = 'walk' # kezdő státusz
         self.facing_right = True # jobbranéz
         self.death=False
         self.attack=False
@@ -33,14 +33,12 @@ class Enemy(pygame.sprite.Sprite):
             self.speed=0 #sebesség 0
             self.direction=pygame.math.Vector2(0,0) #irány 0
         if not self.death:
-            if self.direction.x != 0 and not self.attack: # vízszintes irányú mozgás
+            if self.status == 'idle': # más esetben áll
+                self.speed=0 #sebesség 0
+            elif self.direction.x != 0 and not self.attack: # vízszintes irányú mozgás
                 self.status = 'walk' # futás
             elif self.attack:
                 self.status = 'attack' #támadás
-            else:
-                self.status = 'idle' # más esetben áll
-                self.speed=0 #sebesség 0
-                self.direction=pygame.math.Vector2(0,0) #irány 0
 
     def animate(self): # státusznak megfelelő animálás
         animation = self.animations[self.status]
