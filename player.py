@@ -5,19 +5,21 @@ from support import import_folder #segít a képfájlok rendszerezésében
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.animations={'idle':[],'run':[],'death':[]} #animációk szótára
+        self.animations = {'idle':[],'run':[],'death':[]} #animációk szótára
         self.import_character_assets() #karakter képek betöltése
-        self.frame_index=0 #képek indexeinek száma
-        self.animation_speed=0.3 #indexelés sebessége
+        self.frame_index = 0 #képek indexeinek száma
+        self.animation_speed = 0.3 #indexelés sebessége
         self.image=self.animations['idle'][self.frame_index] #kezdő kép
         self.rect=self.image.get_rect(center=(WIDTH/2,HEIGHT/2)) #kezdő pozíció
-        self.direction=pygame.math.Vector2(0,0) #x,y irányú vektoriális elmozdulás (lényeg, csak irányt mutat)
-        self.speed=8 #mozgás sebessége
-        self.status='idle' #kezdő státusz
-        self.facing_right=True #jobbranéz
-        self.stop_vertical=False
-        self.stop_horizontal=False
-        self.health=100 #élet
+        self.direction = pygame.math.Vector2(0,0) #x,y irányú vektoriális elmozdulás (lényeg, csak irányt mutat)
+        self.speed = 8 #mozgás sebessége
+        self.status = 'idle' #kezdő státusz
+        self.facing_right = True #jobbranéz
+        self.stop_vertical = False
+        self.stop_horizontal = False
+        self.health = 100 #élet
+        self.points = 0 #pont
+        self.kills = 0 #ölt
 
     def import_character_assets(self): #hogyan jussunk el a képekhez
         character_path='img/santa/' #hol a karakter könyvtár

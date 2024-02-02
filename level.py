@@ -4,6 +4,7 @@ from enemy import Enemy
 from tiles import OtherTile
 from settings import tile_size, others, WIDTH, HEIGHT, BG_IMG
 from bullet import Bullet
+from tree import Tree
 
 # inicializálás
 class Level:
@@ -11,11 +12,13 @@ class Level:
         self.display_surface = surface # játékablak a main-ben meghatározottak szerint
         self.counter=0
         self.attack_counter=0
+        self.tree_counter=0
 
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.enemies = pygame.sprite.Group()
         self.other_tiles = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
+        self.trees = pygame.sprite.Group()
 
         # háttérkép betöltése és méretezése
         self.bg_surf = pygame.image.load(BG_IMG).convert_alpha()
@@ -89,7 +92,7 @@ class Level:
     def zombi_attack(self):
         player = self.player.sprite
         for zombi in self.enemies:
-            if abs(player.rect.x - zombi.rect.x) < 150 and abs(player.rect.y - zombi.rect.y) < 150:
+            if abs(player.rect.x - zombi.rect.x) < 200 and abs(player.rect.y - zombi.rect.y) < 200:
                 zombi.attack=True
             else:
                 zombi.attack=False
@@ -117,11 +120,28 @@ class Level:
         for enemy in self.enemies:
             if pygame.sprite.spritecollide(enemy, self.bullets, True):
                 enemy.kill()
+                player.kills += 1
 
         self.bullets.draw(self.display_surface)
 
+    def create_tree(self): #karácsonyfa létrehozása
+        x=random.randint(50,WIDTH-50)
+        y=random.randint(100,HEIGHT-50)
+        tree=Tree(x,y)
+        self.trees.add(tree)
 
+    def add_tree(self): #karácsonyfa hozzáadása
+        self.tree_counter+=1
+        if self.counter%700==0:
+            self.create_tree()
 
+        self.trees.draw(self.display_surface)
+
+        for tree in self.trees:
+            tree.update()
+            if tree.rect.colliderect(self.player.sprite.rect):
+                self.player.sprite.points+=1
+                tree.kill()
                 
 
     #HIBÁS!!!!!!!!!!!!!!!!!!
@@ -163,8 +183,9 @@ class Level:
         self.add_zombi() #zombi hozzáadása
         self.enemies.draw(self.display_surface) #zombi kirajzolása
         self.zombi_move() #zombi mozgása
-        self.zombi_attack()
-        self.santa_attack()
+        self.zombi_attack() #zombi támadása
+        self.santa_attack() #játékos támadása
+        self.add_tree() #jutalom fák hozzáadása
 
         
         
