@@ -140,6 +140,8 @@ class Level:
             tree.update()
             if tree.rect.colliderect(self.player.sprite.rect):
                 self.player.sprite.points+=1
+                self.player.sprite.health+=10
+
                 tree.kill()
                 
     ''' #HIBÁS!!!!!!!!!!!!!!!!!!
