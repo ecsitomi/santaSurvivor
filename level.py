@@ -13,6 +13,7 @@ class Level:
         self.counter=0
         self.attack_counter=0
         self.tree_counter=0
+        self.weapon_level=1
 
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.enemies = pygame.sprite.Group()
@@ -100,29 +101,27 @@ class Level:
             if zombi.rect.colliderect(player.rect):
                 player.health-=1
 
-    def santa_attack(self):
+    def santa_attack(self,weapon_level): #játékos támadása
         self.attack_counter += 1
         player = self.player.sprite
+        if len(self.enemies)==0 and len(self.bullets)!=0:
+            for bullet in self.bullets:
+                bullet.kill()
         if len(self.enemies)!=0:
+            target = random.choice(self.enemies.sprites()) #véletlen célpont, folyton frissül
+            angle = math.atan2(target.rect.centery - player.rect.centery, target.rect.centerx - player.rect.centerx) #szög folyamatos frissítése
+            direction = pygame.math.Vector2(math.cos(angle), math.sin(angle)) #irány folyamatos frissítése
             if self.attack_counter % 75 == 0:
-                bullet = Bullet(player.rect.centerx, player.rect.centery)
-                self.bullets.add(bullet)
+                for i in range(weapon_level):
+                    bullet = Bullet(player.rect.centerx, player.rect.centery, direction) #itt az irány már fix érték lesz
+                    self.bullets.add(bullet)
 
-        for bullet in self.bullets:
-            target = random.choice(self.enemies.sprites())
-            angle = math.atan2(target.rect.centery - player.rect.centery, target.rect.centerx - player.rect.centerx)
-            bullet.direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
-            bullet.rect.x += bullet.direction.x * bullet.speed
-            bullet.rect.y += bullet.direction.y * bullet.speed
-            bullet.update()
 
         # Ütközések kezelése
         for enemy in self.enemies:
             if pygame.sprite.spritecollide(enemy, self.bullets, True):
                 enemy.kill()
                 player.kills += 1
-
-        self.bullets.draw(self.display_surface)
 
     def create_tree(self): #karácsonyfa létrehozása
         x=random.randint(50,WIDTH-50)
@@ -143,9 +142,7 @@ class Level:
                 self.player.sprite.points+=1
                 tree.kill()
                 
-
-    #HIBÁS!!!!!!!!!!!!!!!!!!
-    '''
+    ''' #HIBÁS!!!!!!!!!!!!!!!!!!
     def tile_collision(self): #ütközések a csempékkel
         player=self.player.sprite #játékos sprite
         
@@ -184,9 +181,10 @@ class Level:
         self.enemies.draw(self.display_surface) #zombi kirajzolása
         self.zombi_move() #zombi mozgása
         self.zombi_attack() #zombi támadása
-        self.santa_attack() #játékos támadása
+        self.santa_attack(self.weapon_level) #játékos támadása
         self.add_tree() #jutalom fák hozzáadása
-
+        self.bullets.draw(self.display_surface)
+        self.bullets.update()
         
         
         #AZ ÜTKÖZÉS HIBÁS,EZÉRT A CSEMPÉKET SEM RAJZOLJUK KI

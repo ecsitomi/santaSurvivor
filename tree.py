@@ -13,34 +13,34 @@ class Tree(pygame.sprite.Sprite): #fa osztály
         self.down = False
         self.hit=0
 
-    def jump(self):
+    def jump(self,speed,min,max,hit):
         if self.up:
             self.rect.y -= self.jump_speed
-            self.jump_speed -= 0.5
-            if self.jump_speed == 1:
+            self.jump_speed -= speed
+            if self.jump_speed == min:
                 self.up = False
                 self.down = True
         elif self.down:
             self.rect.y += self.jump_speed
-            self.jump_speed += 0.5
-            if self.jump_speed == 9.5:
+            self.jump_speed += speed
+            if self.jump_speed == max:
                 self.up = True
                 self.down = False
                 self.hit += 1
-                if self.hit == 3:
+                if self.hit == hit:
                     self.first = False
 
-    def first_jump(self): #fa hozzáadása  
+    def jump_bumb(self,counting): #fa hozzáadása  
         if self.first:
-            self.jump()
+            self.jump(0.5,1,9,3)
         if not self.first:
             self.counter += 1
-            if self.counter % 511 == 0:
+            if self.counter % counting == 0:
                 self.first = True
                 self.up = True
                 self.down = False
         
 
     def update(self): #frissítés
-        self.first_jump()
+        self.jump_bumb(1111)
         
