@@ -21,7 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.points = 0 #pont
         self.kills = 0 #ölt
         self.death = False
-        self.resize_death(1.4)
+        self.resize_death(5.8)
 
     def import_character_assets(self): #hogyan jussunk el a képekhez
         character_path='img/santa/' #hol a karakter könyvtár
@@ -74,10 +74,10 @@ class Player(pygame.sprite.Sprite):
 
     def resize_death(self, size):
         for i in range(len(self.animations['death'])):
-            self.animations['death'][i] = pygame.transform.scale(
-                self.animations['death'][i],
-                (int(self.animations['death'][i].get_width() * size), int(self.animations['death'][i].get_height() * size))
-            )
+            self.animations['death'][i] = pygame.image.load('img/santa/death/' + str(i) + '.png').convert_alpha()
+
+        for i in range(len(self.animations['death'])):
+            self.animations['death'][i] = pygame.transform.scale(self.animations['death'][i], (self.animations['death'][i].get_width() / size, self.animations['death'][i].get_height() / size))
 
 
     def update(self): #frissítés
