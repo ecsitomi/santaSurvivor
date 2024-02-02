@@ -93,13 +93,14 @@ class Level:
     def zombi_attack(self):
         player = self.player.sprite
         for zombi in self.enemies:
-            if abs(player.rect.x - zombi.rect.x) < 200 and abs(player.rect.y - zombi.rect.y) < 200:
-                zombi.attack=True
-            else:
-                zombi.attack=False
+            if not zombi.death:
+                if abs(player.rect.x - zombi.rect.x) < 200 and abs(player.rect.y - zombi.rect.y) < 200:
+                    zombi.attack=True
+                else:
+                    zombi.attack=False
 
-            if zombi.rect.colliderect(player.rect):
-                player.health-=1
+                if zombi.rect.colliderect(player.rect):
+                    player.health-=1
 
     def santa_attack(self,weapon_level): #játékos támadása
         self.attack_counter += 1
@@ -120,7 +121,8 @@ class Level:
         # Ütközések kezelése
         for enemy in self.enemies:
             if pygame.sprite.spritecollide(enemy, self.bullets, True):
-                enemy.kill()
+                enemy.death = True
+                #enemy.kill()
                 player.kills += 1
 
     def create_tree(self): #karácsonyfa létrehozása
@@ -148,7 +150,7 @@ class Level:
         player = self.player.sprite
         if player.status == 'death':
             for zombi in self.enemies:
-                zombi.kill()
+                zombi.status='idle'
                 
     
 
