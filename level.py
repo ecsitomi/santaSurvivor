@@ -144,6 +144,38 @@ class Level:
 
                 tree.kill()
                 
+    def santa_death(self):
+        player = self.player.sprite
+        if player.status == 'death':
+            for zombi in self.enemies:
+                zombi.kill()
+                
+    
+
+    #futtatás
+    def run(self):
+        self.movement()  #mozgás & ütközések
+        self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
+        self.enemies.update()  # ellenség update
+        self.enemies.draw(self.display_surface)  # ellenség kirajzolása
+        self.player.update()  # játékos frissítése
+        self.player.draw(self.display_surface)  # játékos kirajzolása a (játékablakban)
+        self.add_zombi() #zombi hozzáadása
+        self.enemies.draw(self.display_surface) #zombi kirajzolása
+        self.zombi_move() #zombi mozgása
+        self.zombi_attack() #zombi támadása
+        self.santa_attack(self.weapon_level) #játékos támadása
+        self.add_tree() #jutalom fák hozzáadása
+        self.bullets.draw(self.display_surface)
+        self.bullets.update()
+        self.santa_death()
+        
+        
+        #AZ ÜTKÖZÉS HIBÁS,EZÉRT A CSEMPÉKET SEM RAJZOLJUK KI
+        #self.tile_collision() #ütközések a csempékkel
+        #self.other_tiles.update()  # díszítőelemek frissítése
+        #self.other_tiles.draw(self.display_surface)  # díszítőelemek kirajzolása
+
     ''' #HIBÁS!!!!!!!!!!!!!!!!!!
     def tile_collision(self): #ütközések a csempékkel
         player=self.player.sprite #játékos sprite
@@ -170,26 +202,3 @@ class Level:
                     player.stop_vertical = False
                     player.stop_horizontal = False
         '''
-
-    #futtatás
-    def run(self):
-        self.movement()  #mozgás & ütközések
-        self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
-        self.enemies.update()  # ellenség update
-        self.enemies.draw(self.display_surface)  # ellenség kirajzolása
-        self.player.update()  # játékos frissítése
-        self.player.draw(self.display_surface)  # játékos kirajzolása a (játékablakban)
-        self.add_zombi() #zombi hozzáadása
-        self.enemies.draw(self.display_surface) #zombi kirajzolása
-        self.zombi_move() #zombi mozgása
-        self.zombi_attack() #zombi támadása
-        self.santa_attack(self.weapon_level) #játékos támadása
-        self.add_tree() #jutalom fák hozzáadása
-        self.bullets.draw(self.display_surface)
-        self.bullets.update()
-        
-        
-        #AZ ÜTKÖZÉS HIBÁS,EZÉRT A CSEMPÉKET SEM RAJZOLJUK KI
-        #self.tile_collision() #ütközések a csempékkel
-        #self.other_tiles.update()  # díszítőelemek frissítése
-        #self.other_tiles.draw(self.display_surface)  # díszítőelemek kirajzolása

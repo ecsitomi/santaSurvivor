@@ -17,15 +17,17 @@ class Player(pygame.sprite.Sprite):
         self.facing_right = True #jobbranéz
         #self.stop_vertical = False
         #self.stop_horizontal = False
-        self.health = 100 #élet
+        self.health = 10 #élet
         self.points = 0 #pont
         self.kills = 0 #ölt
+        self.death = False
+        self.resize_death(1.4)
 
     def import_character_assets(self): #hogyan jussunk el a képekhez
         character_path='img/santa/' #hol a karakter könyvtár
         for animation in self.animations.keys(): #animation szótárban hozzá akarom rendelni a keys-eket
             full_path=character_path+animation #kép teljes elérési útja
-            self.animations[animation]=import_folder(full_path) #ez a függvény visszaad egy listát a megfelelő animációhoz a szótá
+            self.animations[animation]=import_folder(full_path,1.3) #ez a függvény visszaad egy listát a megfelelő animációhoz a szótá
     
     def get_input(self): #gombnyomásra mit tegyen
         if self.health > 0:
@@ -47,14 +49,13 @@ class Player(pygame.sprite.Sprite):
                 self.direction.y=0 #ha nincs elmozdulás nincs iránymódosítás
 
     def get_status(self): #karakter státusz változása
-        if self.direction.x!=0 or self.direction.y!=0: #irányú mozgás
-            self.status='run' #futás
-        elif self.health <= 0:
+        if self.health <= 0: #halál
             self.status = 'death'
             self.health = 0
             self.speed = 0
-            self.direction.x = 0
-            self.direction.y = 0
+            self.direction = pygame.math.Vector2(0,0)
+        elif self.direction.x!=0 or self.direction.y!=0: #irányú mozgás
+            self.status='run' #futás
         else:
             self.status='idle' #más esetben áll
 
@@ -71,7 +72,23 @@ class Player(pygame.sprite.Sprite):
             flipped_image=pygame.transform.flip(image,True,False) #kép/horizontális/vertikális tükrözés
             self.image=flipped_image #tükrözött kép
 
-    def update(self): #játékos folyamatos frissítése
-        self.get_status() #mozgás státusz
-        self.get_input() #milyen billenytyű parancsot kapott
-        self.animate() #animálás
+    def resize_death(self, size):
+        for i in range(len(self.animations['death'])):
+            self.animations['death'][i] = pygame.transform.scale(
+                self.animations['death'][i],
+                (int(self.animations['death'][i].get_width() * size), int(self.animations['death'][i].get_height() * size))
+            )
+
+
+    def update(self): #frissítés
+        if not self.death: #ha él
+            self.get_status()
+            self.get_input()
+            self.animate()
+
+            #halál animáció végének vizsgálata
+            if self.status == 'death' and self.frame_index >= len(self.animations['death']) - 1:
+                self.death = True
+                self.frame_index = len(self.animations['death']) - 1  # Állítsd a frame_index-et a death animáció utolsó képére.
+        
+            

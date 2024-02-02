@@ -24,7 +24,7 @@ class Enemy(pygame.sprite.Sprite):
         character_path = 'img/enemy/' # hol a karakter könyvtár
         for animation in self.animations.keys(): # animation szótárban hozzá akarom rendelni a keys-eket
             full_path = character_path + animation # kép teljes elérési útja
-            self.animations[animation] = import_folder(full_path) # ez a függvény visszaad egy listát a megfelelő animációhoz a szótárban
+            self.animations[animation] = import_folder(full_path,1.3) # ez a függvény visszaad egy listát a megfelelő animációhoz a szótárban
 
     def get_status(self): # karakter státusz változása
         if self.direction.x != 0 and not self.attack: # vízszintes irányú mozgás
