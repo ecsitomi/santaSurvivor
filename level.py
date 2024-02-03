@@ -177,14 +177,14 @@ class Level:
         if self.counter%250==0:
             self.restart()
                 
-    def starter(self):
+    def starter(self,time):
         if self.starting: #kezdőképernyő
             font=setup_font(111) #főcím betűtípusa
             text=font.render('Santa Survivor', True, RED) #szövege
             text_rect=text.get_rect(center=(WIDTH/2,HEIGHT/2)) #helye
             self.display_surface.blit(text,text_rect) #megjelenítése
             pygame.display.update() #kép frissítése
-            pygame.time.delay(3000) #várakozás 2 ms
+            pygame.time.delay(time) #várakozás 2 ms
             self.starting=False    
 
     def restart(self):
@@ -202,12 +202,14 @@ class Level:
             self.trees.empty()
             self.hit.empty()
             self.bomb.empty()
+            self.starting=True
+            self.starter(1000)
             self.setup_level(level_map)
     
     #futtatás
     def run(self):
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
-        self.starter()
+        self.starter(2500)
         self.enemies.update()  # ellenség update
         self.enemies.draw(self.display_surface)  # ellenség kirajzolása
         self.player.update()  # játékos frissítése
