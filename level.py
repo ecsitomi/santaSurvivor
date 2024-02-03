@@ -367,12 +367,12 @@ class Level:
 
         if self.level < 11:
             font2=setup_font(18) #alul megjelenő adatok
-            text2=font2.render(f'Save {10-self.level-1} Christmas Trees to unlock the BOSS!  Highest Score: {self.high_score}', True, RED)
+            text2=font2.render(f'Save {11-self.level} Christmas Trees to unlock the BOSS!  Highest Score: {self.high_score}', True, RED)
             text_rect2=text2.get_rect(center=(WIDTH/2,HEIGHT-30))
             self.display_surface.blit(text2,text_rect2)
         else:
             boss = self.the_boss.sprite
-            font2=setup_font(18) #alul megjelenő adatok
+            font2=setup_font(24) #alul megjelenő adatok
             text2=font2.render(f'BOSS hp: {boss.health}', True, RED)
             text_rect2=text2.get_rect(center=(WIDTH/2,HEIGHT-30))
             self.display_surface.blit(text2,text_rect2)
