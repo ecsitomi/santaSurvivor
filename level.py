@@ -141,7 +141,8 @@ class Level:
             if pygame.sprite.spritecollide(enemy, self.bullets, True):
                 enemy.death = True
                 #enemy.kill()
-                player.kills += random.randint(100, 300)
+                player.points += random.randint(100, 300)
+                player.kills += 1
                 #if self.hit_counter % 25 == 0:
                 bomb_sign = Bomb(enemy.rect.centerx, enemy.rect.centery)
                 self.bomb.add(bomb_sign)
@@ -175,8 +176,8 @@ class Level:
                 zombi.speed=0
             self.trees.empty()
             self.hit.empty()
-        if player.points>self.high_score:
-            self.high_score=player.points
+            if player.points>self.high_score:
+                self.high_score=player.points
         if self.counter%250==0:
             self.restart()
                 
@@ -208,6 +209,7 @@ class Level:
             self.starting=True
             self.starter(1000)
             self.setup_level(level_map)
+            self.start_time = pygame.time.get_ticks()
     
     def statsOnScreen(self): #életerő és pontok kiiratása
         player = self.player.sprite
