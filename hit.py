@@ -1,5 +1,4 @@
-import pygame
-import random
+import pygame, random
 from settings import hit_img
 
 class Hit(pygame.sprite.Sprite):  # sebzés osztály

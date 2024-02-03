@@ -1,5 +1,5 @@
 import pygame
-from settings import WIDTH, HEIGHT, attack_img
+from settings import attack_img, WIDTH, HEIGHT
 
 class Bullet(pygame.sprite.Sprite): #lövedék osztály
     def __init__(self, x, y, direction):

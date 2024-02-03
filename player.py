@@ -1,6 +1,6 @@
 import pygame
-from settings import WIDTH,HEIGHT
 from support import import_folder #segít a képfájlok rendszerezésében
+from settings import WIDTH, HEIGHT
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):

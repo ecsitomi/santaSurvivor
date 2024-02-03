@@ -1,7 +1,7 @@
 import pygame
 
 def setup_font(size): #betűtípus beállítása
-    font_path='img/font/ARCADEPI.TTF'
+    font_path='img/font/Sobread.ttf'
     font_size=size
     return pygame.font.Font(font_path,font_size)
 
@@ -20,12 +20,13 @@ attack_img='img/elements/attack.png' #lövedék képe
 tree_img='img/elements/tree.png' #karácsonyfa képe
 hit_img='img/elements/hit.png' #sebzés képe
 bomb_img='img/elements/bomb.png' #találat robbanás képe
+music='sound/bg_music.mp3' #zene
 
 ''' ABLAK MONITORHOZ IGAZÍTÁSA
 monitor_info = pygame.display.Info() #lekérdezi mekkora a monitor mérete
 WIDTH = monitor_info.current_w #az ablak mérete legyen a monoitor méretéhez igazítva
 HEIGHT = monitor_info.current_h
-'''
+#'''
 
 others = { #különböző pályaelemek kódjai
 '1': 'Crate',

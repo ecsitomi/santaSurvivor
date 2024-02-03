@@ -213,7 +213,7 @@ class Level:
 
                 if not player.death:
                     if zombi.rect.colliderect(player.rect):
-                        player.health-=1
+                        player.health-=1*self.weapon_level
                         zombi.rect.x += zombi.direction.x * zombi.speed *-0.5
                         zombi.rect.y += zombi.direction.y * zombi.speed *-1
                         self.hit_counter+=1
@@ -305,7 +305,7 @@ class Level:
         self.trees.add(tree)
 
     def add_tree(self): #karácsonyfa hozzáadása
-        if self.level < 1:
+        if self.level < 11:
             self.tree_counter+=1
             random_number=random.randint(300,500)
             if self.counter%random_number==0:
@@ -336,27 +336,24 @@ class Level:
             self.starting=False    
 
     def restart(self): #újraindítás
-        player = self.player.sprite
-        boss = self.the_boss.sprite
-        if player.death or boss.death:
-            self.counter=0
-            self.attack_counter=0
-            self.tree_counter=0
-            self.weapon_level=1
-            self.level=1
-            self.hit_counter=0
-            self.player.empty()
-            self.enemies.empty()
-            self.other_tiles.empty()
-            self.bullets.empty()
-            self.trees.empty()
-            self.hit.empty()
-            self.bomb.empty()
-            self.the_boss.empty()
-            self.starting=True
-            self.starter(850)
-            self.setup_level(level_map)
-            self.start_time = pygame.time.get_ticks()
+        self.counter=0
+        self.attack_counter=0
+        self.tree_counter=0
+        self.weapon_level=1
+        self.level=1
+        self.hit_counter=0
+        self.player.empty()
+        self.enemies.empty()
+        self.other_tiles.empty()
+        self.bullets.empty()
+        self.trees.empty()
+        self.hit.empty()
+        self.bomb.empty()
+        self.the_boss.empty()
+        self.starting=True
+        self.starter(850)
+        self.setup_level(level_map)
+        self.start_time = pygame.time.get_ticks()
     
     def statsOnScreen(self): #életerő és pontok kiiratása
         player = self.player.sprite
@@ -366,13 +363,13 @@ class Level:
         self.display_surface.blit(text,text_rect)
 
         if self.level < 11:
-            font2=setup_font(18) #alul megjelenő adatok
+            font2=setup_font(24) #alul megjelenő adatok
             text2=font2.render(f'Save {11-self.level} Christmas Trees to unlock the BOSS!  Highest Score: {self.high_score}', True, RED)
             text_rect2=text2.get_rect(center=(WIDTH/2,HEIGHT-30))
             self.display_surface.blit(text2,text_rect2)
         else:
             boss = self.the_boss.sprite
-            font2=setup_font(24) #alul megjelenő adatok
+            font2=setup_font(36) #alul megjelenő adatok
             text2=font2.render(f'BOSS hp: {boss.health}', True, RED)
             text_rect2=text2.get_rect(center=(WIDTH/2,HEIGHT-30))
             self.display_surface.blit(text2,text_rect2)
@@ -384,12 +381,12 @@ class Level:
 
     def display_elapsed_time(self):
         sec = self.get_elapsed_time()
-        minute = sec // 60
+        minute = 0
         hour = 0
-        if sec >= 60:  # Corrected condition
+        if sec == 60:
             minute += 1
             sec = 0
-        if minute >= 60:  # Corrected condition
+        if minute == 60:
             hour += 1
             minute = 0
         font = setup_font(32)
@@ -398,7 +395,7 @@ class Level:
         self.display_surface.blit(text, text_rect)
     
     def level_correction(self): #szintlépés
-        self.level +=10 
+        self.level +=1 
         player = self.player.sprite
         if self.level%3==0:
             self.weapon_level+=1
@@ -419,18 +416,6 @@ class Level:
         self.starter(1000) #kezdőképernyő
         self.statsOnScreen() #életerő és pontok kiiratása
         self.display_elapsed_time() #eltelt idő kiiratása
-        self.enemies.update()  # ellenség update
-        self.enemies.draw(self.display_surface)  # ellenség kirajzolása
-        self.player.update()  # játékos frissítése
-        self.player.draw(self.display_surface)  # játékos kirajzolása a (játékablakban)
-        self.bullets.update() #golyók frissítése
-        self.bullets.draw(self.display_surface) #golyók kirajzolása
-        self.hit.update() #találat frissítése
-        self.hit.draw(self.display_surface) #találat kirajzolása
-        self.bomb.update() #robbanás frissítése
-        self.bomb.draw(self.display_surface) #robbanás kirajzolása
-        self.damage.update() #sebzés frissítése
-        self.damage.draw(self.display_surface) #sebzés kirajzolása
         self.movement()  #mozgás & ütközések
         self.add_zombi() #zombi hozzáadása
         self.zombi_move() #zombi mozgása
@@ -439,4 +424,16 @@ class Level:
         self.add_tree() #jutalom fák hozzáadása
         self.santa_death() #játékos halála
         self.add_the_boss() #boss hozzáadása
+        self.enemies.update()  # ellenség update
+        self.enemies.draw(self.display_surface)  # ellenség kirajzolása
+        self.bullets.update() #golyók frissítése
+        self.bullets.draw(self.display_surface) #golyók kirajzolása
+        self.player.update()  # játékos frissítése
+        self.player.draw(self.display_surface)  # játékos kirajzolása a (játékablakban)
+        self.hit.update() #találat frissítése
+        self.hit.draw(self.display_surface) #találat kirajzolása
+        self.bomb.update() #robbanás frissítése
+        self.bomb.draw(self.display_surface) #robbanás kirajzolása
+        self.damage.update() #sebzés frissítése
+        self.damage.draw(self.display_surface) #sebzés kirajzolása
 
