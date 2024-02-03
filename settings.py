@@ -22,6 +22,8 @@ hit_img='img/elements/hit.png' #sebzés képe
 bomb_img='img/elements/bomb.png' #találat robbanás képe
 bg_music='sound/bg_music.mp3' #zene
 zombie_sound='sound/zombi.mp3' #zombi hangja
+hohoho='sound/hohoho.mp3' #hohoho hangja
+jingling='sound/jingle-bells.mp3' #csengő hangja
 
 ''' ABLAK MONITORHOZ IGAZÍTÁSA
 monitor_info = pygame.display.Info() #lekérdezi mekkora a monitor mérete

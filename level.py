@@ -323,6 +323,8 @@ class Level:
                     dmg = Damage('+HP/LvL', tree.rect.centerx, tree.rect.centery, GREEN)
                     self.damage.add(dmg)
                     tree.kill()
+                    hoho=pygame.mixer.Sound(hohoho)
+                    hoho.play()
                     self.level_correction()
                 
     def starter(self,time):#kezdőképernyő

@@ -13,11 +13,11 @@ if __name__ == "__main__":
     level=Level(level_map,screen)
 
     #zenelejátszó
-    pygame.mixer.set_num_channels(2)
+    pygame.mixer.set_num_channels(3)
     sound1 = pygame.mixer.Sound(bg_music)
     sound2 = pygame.mixer.Sound(zombie_sound)
-    sound1.set_volume(1)
-    sound2.set_volume(0.1)
+    sound1.set_volume(0.4)
+    sound2.set_volume(0.2)
     channel1 = pygame.mixer.Channel(0)
     channel2 = pygame.mixer.Channel(1)
     channel1.play(sound1, loops=-1)
