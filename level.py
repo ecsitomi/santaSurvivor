@@ -174,10 +174,12 @@ class Level:
                 zombi.speed=0
             self.trees.empty()
             self.hit.empty()
+        if self.counter%250==0:
+            self.restart()
                 
     def starter(self):
         if self.starting: #kezdőképernyő
-            font=setup_font(72) #főcím betűtípusa
+            font=setup_font(111) #főcím betűtípusa
             text=font.render('Santa Survivor', True, RED) #szövege
             text_rect=text.get_rect(center=(WIDTH/2,HEIGHT/2)) #helye
             self.display_surface.blit(text,text_rect) #megjelenítése
@@ -185,6 +187,23 @@ class Level:
             pygame.time.delay(3000) #várakozás 2 ms
             self.starting=False    
 
+    def restart(self):
+        player = self.player.sprite
+        if player.death:
+            self.counter=0
+            self.attack_counter=0
+            self.tree_counter=0
+            self.weapon_level=1
+            self.hit_counter=0
+            self.player.empty()
+            self.enemies.empty()
+            self.other_tiles.empty()
+            self.bullets.empty()
+            self.trees.empty()
+            self.hit.empty()
+            self.bomb.empty()
+            self.setup_level(level_map)
+    
     #futtatás
     def run(self):
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
@@ -206,6 +225,7 @@ class Level:
         self.santa_attack(self.weapon_level) #játékos támadása
         self.add_tree() #jutalom fák hozzáadása
         self.santa_death()
+        
         
         
         #AZ ÜTKÖZÉS HIBÁS,EZÉRT A CSEMPÉKET SEM RAJZOLJUK KI
