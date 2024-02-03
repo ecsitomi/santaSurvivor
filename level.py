@@ -11,12 +11,15 @@ from bomb import Bomb
 # inicializálás
 class Level:
     def __init__(self, level_data, surface):
+        self.starting=True
         self.display_surface = surface # játékablak a main-ben meghatározottak szerint
         self.counter=0
         self.attack_counter=0
         self.tree_counter=0
         self.weapon_level=1
         self.hit_counter=0
+        self.high_score=0
+        self.start_time = pygame.time.get_ticks()   
 
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.enemies = pygame.sprite.Group()
@@ -25,7 +28,6 @@ class Level:
         self.trees = pygame.sprite.Group()
         self.hit = pygame.sprite.Group()
         self.bomb = pygame.sprite.Group()
-        self.starting=True
 
         # háttérkép betöltése és méretezése
         self.setup_BG(BG_IMG) # háttérkép betöltése
@@ -117,7 +119,6 @@ class Level:
                             hit_sign = Hit(player.rect.centerx, player.rect.centery)
                             self.hit.add(hit_sign)
 
-
     def santa_attack(self,weapon_level): #játékos támadása
         self.attack_counter += 1
         player = self.player.sprite
@@ -140,7 +141,7 @@ class Level:
             if pygame.sprite.spritecollide(enemy, self.bullets, True):
                 enemy.death = True
                 #enemy.kill()
-                player.kills += 1
+                player.kills += random.randint(100, 300)
                 #if self.hit_counter % 25 == 0:
                 bomb_sign = Bomb(enemy.rect.centerx, enemy.rect.centery)
                 self.bomb.add(bomb_sign)
@@ -161,8 +162,8 @@ class Level:
         for tree in self.trees:
             tree.update()
             if tree.rect.colliderect(self.player.sprite.rect):
-                self.player.sprite.points+=1
-                self.player.sprite.health+=10
+                self.player.sprite.points+= random.randint(300,600)
+                self.player.sprite.health+=100
 
                 tree.kill()
                 
@@ -174,6 +175,8 @@ class Level:
                 zombi.speed=0
             self.trees.empty()
             self.hit.empty()
+        if player.points>self.high_score:
+            self.high_score=player.points
         if self.counter%250==0:
             self.restart()
                 
@@ -206,10 +209,39 @@ class Level:
             self.starter(1000)
             self.setup_level(level_map)
     
+    def statsOnScreen(self): #életerő és pontok kiiratása
+        player = self.player.sprite
+        font=setup_font(32) #betűtípus és méret
+        text=font.render(f'Health: {player.health//10} Kills: {player.kills} Points: {player.points} Highest: {self.high_score}', True, BLUE) #mit
+        text_rect=text.get_rect(center=(WIDTH/2,50)) #hova
+        self.display_surface.blit(text,text_rect)
+
+    def get_elapsed_time(self):
+        current_time = pygame.time.get_ticks()
+        elapsed_time = (current_time - self.start_time) // 1000  # Másodpercekben
+        return elapsed_time
+
+    def display_elapsed_time(self):
+        sec =  self.get_elapsed_time()
+        minute = sec // 60
+        hour = 0
+        if sec == 60:
+            minute += 1
+            sec = 0
+        if minute == 60:
+            hour += 1
+            minute = 0
+        font = setup_font(32)  # Válaszd meg a megfelelő betűtípust és méretet
+        text = font.render(f'{minute}:{sec}', True, BLUE)
+        text_rect = text.get_rect(center=(WIDTH/2, 100))  # Válaszd meg a megfelelő helyet
+        self.display_surface.blit(text, text_rect)
+    
     #futtatás
     def run(self):
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
         self.starter(2500)
+        self.statsOnScreen() #életerő és pontok kiiratása
+        self.display_elapsed_time()
         self.enemies.update()  # ellenség update
         self.enemies.draw(self.display_surface)  # ellenség kirajzolása
         self.player.update()  # játékos frissítése

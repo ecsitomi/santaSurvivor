@@ -7,6 +7,7 @@ def setup_font(size): #betűtípus beállítása
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+BLUE = (27,85,131)
 RED = (255, 0, 0)
 FPS = 60
 BG_COLOR = WHITE
