@@ -6,7 +6,8 @@ from settings import *
 from bullet import Bullet
 from tree import Tree
 from hit import Hit
-from bomb import Bomb   
+from bomb import Bomb
+from damage import Damage
 
 # inicializálás
 class Level:
@@ -17,9 +18,10 @@ class Level:
         self.attack_counter=0
         self.tree_counter=0
         self.weapon_level=1
+        self.level=1
         self.hit_counter=0
         self.high_score=0
-        self.start_time = pygame.time.get_ticks()   
+        self.start_time = pygame.time.get_ticks() 
 
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.enemies = pygame.sprite.Group()
@@ -28,6 +30,7 @@ class Level:
         self.trees = pygame.sprite.Group()
         self.hit = pygame.sprite.Group()
         self.bomb = pygame.sprite.Group()
+        self.damage = pygame.sprite.Group()
 
         # háttérkép betöltése és méretezése
         self.setup_BG(BG_IMG) # háttérkép betöltése
@@ -87,10 +90,21 @@ class Level:
     
     def add_zombi(self): #zombi hozzáadása
         self.counter+=1
-        if self.counter%100==0:
+        if self.counter%100-3*self.level==0:
             self.create_zombi_horizontal()
-        if self.counter%150==0:
+        if self.counter%250-5*self.level==0:
+            self.create_zombi_horizontal()
+        if self.counter%150-5*self.level==0:
             self.create_zombi_vertical()
+        if self.counter%200-3*self.level==0:
+            self.create_zombi_vertical()
+
+        if self.level > 6:
+            if self.counter%100==0:
+                self.create_zombi_horizontal()
+        if self.level > 8:
+            if self.counter%100==0:
+                self.create_zombi_vertical()
             
     def zombi_move(self):
         player_pos = self.player.sprite.rect.center
@@ -127,26 +141,26 @@ class Level:
                 for bullet in self.bullets:
                     bullet.kill()
             if len(self.enemies)!=0:
-                target = random.choice(self.enemies.sprites()) #véletlen célpont, folyton frissül
-                angle = math.atan2(target.rect.centery - player.rect.centery, target.rect.centerx - player.rect.centerx) #szög folyamatos frissítése
-                direction = pygame.math.Vector2(math.cos(angle), math.sin(angle)) #irány folyamatos frissítése
-                if self.attack_counter % 75 == 0:
-                    for i in range(weapon_level):
+                if self.attack_counter % 70-2*weapon_level == 0:
+                    for _ in range(weapon_level):
+                        target = random.choice(self.enemies.sprites()) #véletlen célpont, folyton frissül
+                        angle = math.atan2(target.rect.centery - player.rect.centery, target.rect.centerx - player.rect.centerx) #szög folyamatos frissítése
+                        direction = pygame.math.Vector2(math.cos(angle), math.sin(angle)) #irány folyamatos frissítése
                         bullet = Bullet(player.rect.centerx, player.rect.centery, direction) #itt az irány már fix érték lesz
                         self.bullets.add(bullet)
-
 
         # Ütközések kezelése
         for enemy in self.enemies:
             if pygame.sprite.spritecollide(enemy, self.bullets, True):
-                enemy.death = True
-                #enemy.kill()
-                player.points += random.randint(100, 300)
-                player.kills += 1
-                #if self.hit_counter % 25 == 0:
                 bomb_sign = Bomb(enemy.rect.centerx, enemy.rect.centery)
                 self.bomb.add(bomb_sign)
-
+                enemy.death = True
+                random_number = random.randint(10, 30)
+                dmg = Damage(random_number, enemy.rect.centerx, enemy.rect.centery, RED)
+                self.damage.add(dmg)
+                player.points += random_number
+                player.kills += 1
+                
     def create_tree(self): #karácsonyfa létrehozása
         x=random.randint(50,WIDTH-50)
         y=random.randint(100,HEIGHT-50)
@@ -155,7 +169,8 @@ class Level:
 
     def add_tree(self): #karácsonyfa hozzáadása
         self.tree_counter+=1
-        if self.counter%700==0:
+        random_number=random.randint(500,800)
+        if self.counter%random_number==0:
             self.create_tree()
 
         self.trees.draw(self.display_surface)
@@ -163,10 +178,13 @@ class Level:
         for tree in self.trees:
             tree.update()
             if tree.rect.colliderect(self.player.sprite.rect):
-                self.player.sprite.points+= random.randint(300,600)
-                self.player.sprite.health+=100
-
+                random_number = random.randint(30,60)
+                self.player.sprite.points+=random_number
+                self.player.sprite.health+=50
+                dmg = Damage('+HP/LvL', tree.rect.centerx, tree.rect.centery, GREEN)
+                self.damage.add(dmg)
                 tree.kill()
+                self.level_correction()
                 
     def santa_death(self):
         player = self.player.sprite
@@ -178,7 +196,7 @@ class Level:
             self.hit.empty()
             if player.points>self.high_score:
                 self.high_score=player.points
-        if self.counter%250==0:
+        if self.counter%200==0:
             self.restart()
                 
     def starter(self,time):
@@ -198,6 +216,7 @@ class Level:
             self.attack_counter=0
             self.tree_counter=0
             self.weapon_level=1
+            self.level=1
             self.hit_counter=0
             self.player.empty()
             self.enemies.empty()
@@ -207,16 +226,21 @@ class Level:
             self.hit.empty()
             self.bomb.empty()
             self.starting=True
-            self.starter(1000)
+            self.starter(850)
             self.setup_level(level_map)
             self.start_time = pygame.time.get_ticks()
     
     def statsOnScreen(self): #életerő és pontok kiiratása
         player = self.player.sprite
         font=setup_font(32) #betűtípus és méret
-        text=font.render(f'Health: {player.health//10} Kills: {player.kills} Points: {player.points} Highest: {self.high_score}', True, BLUE) #mit
+        text=font.render(f'Health: {player.health//10}  Kills: {player.kills}  Points: {player.points}', True, BLUE) #mit
         text_rect=text.get_rect(center=(WIDTH/2,50)) #hova
         self.display_surface.blit(text,text_rect)
+
+        font2=setup_font(18)
+        text2=font2.render(f'Saved Christmas Trees: {self.level-1}  Highest: {self.high_score}', True, RED) #mit
+        text_rect2=text2.get_rect(center=(WIDTH/2,HEIGHT-30))
+        self.display_surface.blit(text2,text_rect2)
 
     def get_elapsed_time(self):
         current_time = pygame.time.get_ticks()
@@ -238,10 +262,23 @@ class Level:
         text_rect = text.get_rect(center=(WIDTH/2, 100))  # Válaszd meg a megfelelő helyet
         self.display_surface.blit(text, text_rect)
     
+    def level_correction(self):
+        self.level +=1 
+        player = self.player.sprite
+        if self.level%3==0:
+            self.weapon_level+=1
+            if self.weapon_level>4:
+                self.weapon_level=4
+        if self.level%2==0:
+            player.speed+=1
+            #player.health+=20
+        if player.health>1000:
+            player.health=1000      
+    
     #futtatás
     def run(self):
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
-        self.starter(2500)
+        self.starter(1000)
         self.statsOnScreen() #életerő és pontok kiiratása
         self.display_elapsed_time()
         self.enemies.update()  # ellenség update
@@ -254,11 +291,13 @@ class Level:
         self.hit.draw(self.display_surface)
         self.bomb.update()
         self.bomb.draw(self.display_surface)
+        self.damage.update()
+        self.damage.draw(self.display_surface)
         self.movement()  #mozgás & ütközések
         self.add_zombi() #zombi hozzáadása
         self.zombi_move() #zombi mozgása
         self.zombi_attack() #zombi támadása
-        self.santa_attack(self.weapon_level) #játékos támadása
+        self.santa_attack(self.level) #játékos támadása
         self.add_tree() #jutalom fák hozzáadása
         self.santa_death()
         

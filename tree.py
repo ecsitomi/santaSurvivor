@@ -43,4 +43,3 @@ class Tree(pygame.sprite.Sprite): #fa osztály
 
     def update(self): #frissítés
         self.jump_bumb(1111)
-        
