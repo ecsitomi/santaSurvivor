@@ -1,5 +1,10 @@
 import pygame
 
+def setup_font(size): #betűtípus beállítása
+    font_path='img/font/ARCADEPI.TTF' #elérés
+    font_size=size #méret
+    return pygame.font.Font(font_path,font_size)
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)

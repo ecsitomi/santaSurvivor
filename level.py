@@ -2,7 +2,7 @@ import pygame, random, math
 from player import Player
 from enemy import Enemy
 from tiles import OtherTile
-from settings import tile_size, others, WIDTH, HEIGHT, BG_IMG, WHITE
+from settings import *
 from bullet import Bullet
 from tree import Tree
 from hit import Hit
@@ -25,14 +25,17 @@ class Level:
         self.trees = pygame.sprite.Group()
         self.hit = pygame.sprite.Group()
         self.bomb = pygame.sprite.Group()
+        self.starting=True
 
         # háttérkép betöltése és méretezése
-        self.bg_surf = pygame.image.load(BG_IMG).convert_alpha()
-        self.bg_rect = self.bg_surf.get_rect()
-        self.bg_surf = self.scale_background()
-
+        self.setup_BG(BG_IMG) # háttérkép betöltése
         self.setup_level(level_data) # pálya betöltése
 
+    def setup_BG(self,img): #háttérkép betöltése
+        self.bg_surf = pygame.image.load(img).convert_alpha()
+        self.bg_rect = self.bg_surf.get_rect()
+        self.bg_surf = self.scale_background()
+    
     def scale_background(self): #háttérkép méretezése
         original_width, original_height = self.bg_surf.get_size()  # Az eredeti háttérkép méretének lekérdezése
 
@@ -172,12 +175,20 @@ class Level:
             self.trees.empty()
             self.hit.empty()
                 
-    
+    def starter(self):
+        if self.starting: #kezdőképernyő
+            font=setup_font(72) #főcím betűtípusa
+            text=font.render('Santa Survivor', True, RED) #szövege
+            text_rect=text.get_rect(center=(WIDTH/2,HEIGHT/2)) #helye
+            self.display_surface.blit(text,text_rect) #megjelenítése
+            pygame.display.update() #kép frissítése
+            pygame.time.delay(3000) #várakozás 2 ms
+            self.starting=False    
 
     #futtatás
     def run(self):
-        self.movement()  #mozgás & ütközések
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
+        self.starter()
         self.enemies.update()  # ellenség update
         self.enemies.draw(self.display_surface)  # ellenség kirajzolása
         self.player.update()  # játékos frissítése
@@ -188,6 +199,7 @@ class Level:
         self.hit.draw(self.display_surface)
         self.bomb.update()
         self.bomb.draw(self.display_surface)
+        self.movement()  #mozgás & ütközések
         self.add_zombi() #zombi hozzáadása
         self.zombi_move() #zombi mozgása
         self.zombi_attack() #zombi támadása
