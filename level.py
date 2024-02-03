@@ -395,7 +395,7 @@ class Level:
         return elapsed_time        
     
     def level_correction(self): #szintlépés
-        self.level +=10
+        self.level +=1
         player = self.player.sprite
         if self.level%3==0:
             self.weapon_level+=1
