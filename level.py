@@ -119,6 +119,8 @@ class Level:
             boss.status = 'death'
             boss.speed = 0
             boss.direction = pygame.math.Vector2(0, 0)
+            hoho=pygame.mixer.Sound(hohoho)
+            hoho.play()
             if self.counter % 200 == 0:
                 self.restart()
 
