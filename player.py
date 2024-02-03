@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.facing_right = True #jobbranéz
         #self.stop_vertical = False
         #self.stop_horizontal = False
-        self.health = 10 #élet
+        self.health = 1000 #élet
         self.points = 0 #pont
         self.kills = 0 #ölt
         self.death = False

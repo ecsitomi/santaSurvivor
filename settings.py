@@ -11,6 +11,8 @@ HEIGHT = 960 #64x15
 tile_size = 64 #csempék szélessége/magassága pixelben, ha később szükséges lesz
 attack_img='img/santa/attack.png'
 tree_img='img/santa/tree.png'
+hit_img='img/santa/hit.png'
+bomb_img='img/santa/bomb.png'
 
 ''' ABLAK MONITORHOZ IGAZÍTÁSA
 monitor_info = pygame.display.Info() #lekérdezi mekkora a monitor mérete

@@ -2,9 +2,11 @@ import pygame, random, math
 from player import Player
 from enemy import Enemy
 from tiles import OtherTile
-from settings import tile_size, others, WIDTH, HEIGHT, BG_IMG
+from settings import tile_size, others, WIDTH, HEIGHT, BG_IMG, WHITE
 from bullet import Bullet
 from tree import Tree
+from hit import Hit
+from bomb import Bomb   
 
 # inicializálás
 class Level:
@@ -14,12 +16,15 @@ class Level:
         self.attack_counter=0
         self.tree_counter=0
         self.weapon_level=1
+        self.hit_counter=0
 
         self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
         self.enemies = pygame.sprite.Group()
         self.other_tiles = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.trees = pygame.sprite.Group()
+        self.hit = pygame.sprite.Group()
+        self.bomb = pygame.sprite.Group()
 
         # háttérkép betöltése és méretezése
         self.bg_surf = pygame.image.load(BG_IMG).convert_alpha()
@@ -99,8 +104,16 @@ class Level:
                 else:
                     zombi.attack=False
 
-                if zombi.rect.colliderect(player.rect):
-                    player.health-=1
+                if not player.death:
+                    if zombi.rect.colliderect(player.rect):
+                        player.health-=1
+                        zombi.rect.x += zombi.direction.x * zombi.speed *-0.5
+                        zombi.rect.y += zombi.direction.y * zombi.speed *-1
+                        self.hit_counter+=1
+                        if self.hit_counter % 25 == 0:
+                            hit_sign = Hit(player.rect.centerx, player.rect.centery)
+                            self.hit.add(hit_sign)
+
 
     def santa_attack(self,weapon_level): #játékos támadása
         self.attack_counter += 1
@@ -125,6 +138,9 @@ class Level:
                 enemy.death = True
                 #enemy.kill()
                 player.kills += 1
+                #if self.hit_counter % 25 == 0:
+                bomb_sign = Bomb(enemy.rect.centerx, enemy.rect.centery)
+                self.bomb.add(bomb_sign)
 
     def create_tree(self): #karácsonyfa létrehozása
         x=random.randint(50,WIDTH-50)
@@ -154,6 +170,7 @@ class Level:
                 zombi.status='idle'
                 zombi.speed=0
             self.trees.empty()
+            self.hit.empty()
                 
     
 
@@ -165,14 +182,17 @@ class Level:
         self.enemies.draw(self.display_surface)  # ellenség kirajzolása
         self.player.update()  # játékos frissítése
         self.player.draw(self.display_surface)  # játékos kirajzolása a (játékablakban)
+        self.bullets.update()
+        self.bullets.draw(self.display_surface)
+        self.hit.update()
+        self.hit.draw(self.display_surface)
+        self.bomb.update()
+        self.bomb.draw(self.display_surface)
         self.add_zombi() #zombi hozzáadása
-        self.enemies.draw(self.display_surface) #zombi kirajzolása
         self.zombi_move() #zombi mozgása
         self.zombi_attack() #zombi támadása
         self.santa_attack(self.weapon_level) #játékos támadása
         self.add_tree() #jutalom fák hozzáadása
-        self.bullets.draw(self.display_surface)
-        self.bullets.update()
         self.santa_death()
         
         
