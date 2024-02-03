@@ -36,8 +36,10 @@ class Boss(pygame.sprite.Sprite):
                 self.speed=0
             elif self.direction.x != 0 and not self.attack:
                 self.status = 'walk'
+                self.speed=10
             elif self.attack:
                 self.status = 'attack'
+                self.speed=20
 
     def animate(self): # karakter animációja
         animation = self.animations[self.status]
@@ -56,8 +58,8 @@ class Boss(pygame.sprite.Sprite):
 
     def death_animation(self): # halál animációja, hogy ne ismétlődjön
         if self.status == 'death' and self.frame_index >= len(self.animations['death']) - 1:
-            self.frame_index = 0
-            self.kill()
+            self.death = True
+            self.frame_index = len(self.animations['death']) - 1
 
     def resize_death(self, size): #halál animáció képeinek átméretezése
         for i in range(len(self.animations['death'])):
