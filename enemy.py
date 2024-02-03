@@ -18,6 +18,7 @@ class Enemy(pygame.sprite.Sprite):
         self.death=False
         self.attack=False
         self.resize_death(5.8)
+        
 
     def import_character_assets(self): #a karakter képeinek betöltése
         character_path = 'img/enemy/'

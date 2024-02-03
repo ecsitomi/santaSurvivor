@@ -436,4 +436,5 @@ class Level:
         self.bomb.draw(self.display_surface) #robbanás kirajzolása
         self.damage.update() #sebzés frissítése
         self.damage.draw(self.display_surface) #sebzés kirajzolása
+        
 

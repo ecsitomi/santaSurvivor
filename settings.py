@@ -20,7 +20,8 @@ attack_img='img/elements/attack.png' #lövedék képe
 tree_img='img/elements/tree.png' #karácsonyfa képe
 hit_img='img/elements/hit.png' #sebzés képe
 bomb_img='img/elements/bomb.png' #találat robbanás képe
-music='sound/bg_music.mp3' #zene
+bg_music='sound/bg_music.mp3' #zene
+zombie_sound='sound/zombi.mp3' #zombi hangja
 
 ''' ABLAK MONITORHOZ IGAZÍTÁSA
 monitor_info = pygame.display.Info() #lekérdezi mekkora a monitor mérete
