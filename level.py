@@ -26,11 +26,13 @@ class Level:
         self.high_score=0
         self.start_time = pygame.time.get_ticks() 
         self.boss_attack_direction = None
+        self.exchange = 70-3*self.level
 
         #sprite csoportok
         self.player = pygame.sprite.GroupSingle() 
         self.the_boss = pygame.sprite.GroupSingle()
         self.enemies = pygame.sprite.Group()
+        self.enemies_copy=pygame.sprite.Group().copy()
         self.other_tiles = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.trees = pygame.sprite.Group()
@@ -56,6 +58,10 @@ class Level:
         return pygame.transform.scale(self.bg_surf, (new_width, new_height)) # Háttérkép méretének beállítása és visszaadása
 
     def setup_level(self, layout): #pálya betöltése
+        for _ in range(10):
+            self.create_zombi_horizontal()
+            self.create_zombi_vertical()
+
         player_sprite = Player()
         self.player.add(player_sprite)
         for row_index, row in enumerate(layout):
@@ -165,14 +171,14 @@ class Level:
                         self.hit.add(hit_sign)
 
     def create_zombi_horizontal(self): #zombi létrehozása oldalt
-        x=random.randint(-50,WIDTH+50)
-        y=random.choice([-50,HEIGHT+50])
+        x=random.randint(-100,WIDTH+100)
+        y=random.choice([-100,HEIGHT+100])
         zombi=Enemy(x,y)
         self.enemies.add(zombi)
 
     def create_zombi_vertical(self): #zombi létrehozása fent/lent
-        x=random.choice([-50,WIDTH+50])
-        y=random.randint(-50,HEIGHT+50)
+        x=random.choice([-100,WIDTH+100])
+        y=random.randint(-100,HEIGHT+100)
         zombi=Enemy(x,y)
         self.enemies.add(zombi)
     
@@ -273,6 +279,7 @@ class Level:
                         bullet.kill()
 
     def santa_death(self):
+        self.counter += 1
         if self.level < 11:
             player = self.player.sprite
             if player.status == 'death':
@@ -354,7 +361,7 @@ class Level:
         self.bomb.empty()
         self.the_boss.empty()
         self.starting=True
-        self.starter(850)
+        self.starter(100)
         self.setup_level(level_map)
         self.start_time = pygame.time.get_ticks()
     
@@ -405,11 +412,12 @@ class Level:
             
     #futtatás
     def run(self):
+        #self.add_zombi() #zombi hozzáadása
+        self.counter+=1
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
         self.starter(1000) #kezdőképernyő
         self.statsOnScreen() #életerő és pontok kiiratása
         self.movement()  #mozgás & ütközések
-        self.add_zombi() #zombi hozzáadása
         self.zombi_move() #zombi mozgása
         self.zombi_attack() #zombi támadása
         self.santa_attack(self.level) #játékos támadása

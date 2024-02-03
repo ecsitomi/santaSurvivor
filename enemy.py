@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from support import import_folder
 
 class Enemy(pygame.sprite.Sprite):
@@ -10,15 +10,15 @@ class Enemy(pygame.sprite.Sprite):
         self.animation_speed = 0.15
         self.image = self.animations['idle'][self.frame_index]
         self.rect = self.image.get_rect(center=(x, y))
+        self.rect_original = self.rect.copy()
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 5
+        self.speed = random.randint(1, 7)
         self.counter = 0
         self.status = 'walk'
         self.facing_right = True
         self.death=False
         self.attack=False
         self.resize_death(5.8)
-        
 
     def import_character_assets(self): #a karakter képeinek betöltése
         character_path = 'img/enemy/'
@@ -30,7 +30,6 @@ class Enemy(pygame.sprite.Sprite):
         if self.death: 
             self.status='death'
             self.speed=0
-            self.direction=pygame.math.Vector2(0,0)
         if not self.death:
             if self.status == 'idle':
                 self.speed=0
@@ -57,7 +56,20 @@ class Enemy(pygame.sprite.Sprite):
     def death_animation(self): # halál animációja, hogy ne ismétlődjön
         if self.status == 'death' and self.frame_index >= len(self.animations['death']) - 1:
             self.frame_index = 0
-            self.kill()
+            self.resurrection()
+
+    def resurrection(self):
+        self.frame_index = 0
+        self.image = self.animations['idle'][self.frame_index]
+        self.counter = 0
+        self.status = 'walk'
+        self.facing_right = True
+        self.death=False
+        self.attack=False
+        self.rect = self.rect_original.copy()
+        self.rect_original.x = self.rect.x 
+        self.rect_original.y = self.rect.y
+        self.speed = random.randint(1, 7)
 
     def resize_death(self, size): #halál animáció képeinek átméretezése
         for i in range(len(self.animations['death'])):
