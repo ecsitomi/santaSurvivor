@@ -1,5 +1,5 @@
 import pygame
-from settings import WIDTH, HEIGHT, tree_img
+from settings import tree_img
 
 class Tree(pygame.sprite.Sprite): #fa osztály
     def __init__(self, x, y):

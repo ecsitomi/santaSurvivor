@@ -1,17 +1,18 @@
 import pygame
 from support import import_folder
 
-class Enemy(pygame.sprite.Sprite):
+class Boss(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.animations = {'idle': [], 'walk': [], 'death': [], 'attack': []}
-        self.import_character_assets() # karakter képek betöltése
+        self.import_character_assets()
         self.frame_index = 0
         self.animation_speed = 0.15
         self.image = self.animations['idle'][self.frame_index]
         self.rect = self.image.get_rect(center=(x, y))
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 5
+        self.speed = 10
+        self.health = 1000
         self.counter = 0
         self.status = 'walk'
         self.facing_right = True
@@ -20,7 +21,7 @@ class Enemy(pygame.sprite.Sprite):
         self.resize_death(5.8)
 
     def import_character_assets(self): #a karakter képeinek betöltése
-        character_path = 'img/enemy/'
+        character_path = 'img/boss/'
         for animation in self.animations.keys():
             full_path = character_path + animation
             self.animations[animation] = import_folder(full_path,1.3)
@@ -60,7 +61,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def resize_death(self, size): #halál animáció képeinek átméretezése
         for i in range(len(self.animations['death'])):
-            self.animations['death'][i] = pygame.image.load('img/enemy/death/' + str(i) + '.png').convert_alpha()
+            self.animations['death'][i] = pygame.image.load('img/boss/death/' + str(i) + '.png').convert_alpha()
 
         for i in range(len(self.animations['death'])):
             self.animations['death'][i] = pygame.transform.scale(self.animations['death'][i], (self.animations['death'][i].get_width() / size, self.animations['death'][i].get_height() / size))

@@ -16,10 +16,10 @@ BG_IMG = 'img/bg/bg.jpg'
 WIDTH = 1280 #64x20
 HEIGHT = 960 #64x15
 tile_size = 64 #csempék szélessége/magassága pixelben
-attack_img='img/santa/attack.png' #lövedék képe
-tree_img='img/santa/tree.png' #karácsonyfa képe
-hit_img='img/santa/hit.png' #sebzés képe
-bomb_img='img/santa/bomb.png' #találat robbanás képe
+attack_img='img/elements/attack.png' #lövedék képe
+tree_img='img/elements/tree.png' #karácsonyfa képe
+hit_img='img/elements/hit.png' #sebzés képe
+bomb_img='img/elements/bomb.png' #találat robbanás képe
 
 ''' ABLAK MONITORHOZ IGAZÍTÁSA
 monitor_info = pygame.display.Info() #lekérdezi mekkora a monitor mérete

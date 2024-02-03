@@ -8,14 +8,17 @@ from tree import Tree
 from hit import Hit
 from bomb import Bomb
 from damage import Damage
+from boss import Boss
 
 # inicializálás
 class Level:
     def __init__(self, level_data, surface):
         self.starting=True
+        self.paint_red = False
         self.display_surface = surface # játékablak hivatkozva a mainből
         self.counter=0
         self.attack_counter=0
+        self.boss_attac_counter=0
         self.tree_counter=0
         self.weapon_level=1
         self.level=1
@@ -25,6 +28,7 @@ class Level:
 
         #sprite csoportok
         self.player = pygame.sprite.GroupSingle() 
+        self.the_boss = pygame.sprite.GroupSingle()
         self.enemies = pygame.sprite.Group()
         self.other_tiles = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
@@ -76,6 +80,66 @@ class Level:
         if player.rect.bottom > HEIGHT: 
             player.rect.bottom = HEIGHT 
 
+    def paint_it_red(self):
+        if not self.paint_red:
+            self.paint_red = True
+            self.display_surface.fill(RED)
+            font = setup_font(72)
+            text = font.render(f'BOSS FIGHT', True, WHITE)  # Updated format
+            text_rect = text.get_rect(center=(WIDTH/2, HEIGHT/2))
+            self.display_surface.blit(text, text_rect)
+            pygame.time.delay(800)
+            pygame.display.update()
+        else:
+            pass
+    
+    def add_the_boss(self): #boss hozzáadása
+        if self.level >= 11:
+            self.paint_it_red()
+            self.enemies.empty()
+            if len(self.the_boss)==0:
+                self.create_boss()
+            self.the_boss.update()
+            self.the_boss.draw(self.display_surface)
+            self.boss_move()
+            self.boss_attack()
+
+
+    def create_boss(self): #boss létrehozása
+        x=random.choice([-50,WIDTH+50])
+        y=random.randint(-50,HEIGHT+50)
+        boss=Boss(x,y)
+        self.the_boss.add(boss)
+
+    def boss_move(self): #boss mozgása
+        player_pos = self.player.sprite.rect.center
+        boss = self.the_boss.sprite
+        angle = math.atan2(player_pos[1] - boss.rect.centery, player_pos[0] - boss.rect.centerx)
+        boss.direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+        boss.rect.x += boss.direction.x * boss.speed
+        boss.rect.y += boss.direction.y * boss.speed
+
+    def boss_attack(self): #boss támadása
+        self.boss_attac_counter += 1
+        player = self.player.sprite
+        boss = self.the_boss.sprite
+        if not boss.death:
+            if abs(player.rect.x - boss.rect.x) < 200 and abs(player.rect.y - boss.rect.y) < 200:
+                if self.boss_attac_counter % 300 == 0:
+                    boss.attack=True
+                    boss.speed=25
+            else:
+                boss.attack=False
+
+            # Ütközések kezelése
+            if not player.death:
+                if boss.rect.colliderect(player.rect):
+                    player.health-=100
+                    self.hit_counter+=1
+                    if self.hit_counter % 25 == 0:
+                        hit_sign = Hit(player.rect.centerx, player.rect.centery)
+                        self.hit.add(hit_sign)
+
     def create_zombi_horizontal(self): #zombi létrehozása oldalt
         x=random.randint(-50,WIDTH+50)
         y=random.choice([-50,HEIGHT+50])
@@ -89,22 +153,23 @@ class Level:
         self.enemies.add(zombi)
     
     def add_zombi(self): #zombi hozzáadása
-        self.counter+=1
-        if self.counter%100-3*self.level==0:
-            self.create_zombi_horizontal()
-        if self.counter%250-5*self.level==0:
-            self.create_zombi_horizontal()
-        if self.counter%150-5*self.level==0:
-            self.create_zombi_vertical()
-        if self.counter%200-3*self.level==0:
-            self.create_zombi_vertical()
-
-        if self.level > 6:
-            if self.counter%100==0:
+        if self.level < 11:
+            self.counter+=1
+            if self.counter%100-3*self.level==0:
                 self.create_zombi_horizontal()
-        if self.level > 8:
-            if self.counter%100==0:
+            if self.counter%250-5*self.level==0:
+                self.create_zombi_horizontal()
+            if self.counter%150-5*self.level==0:
                 self.create_zombi_vertical()
+            if self.counter%200-3*self.level==0:
+                self.create_zombi_vertical()
+
+            if self.level > 6:
+                if self.counter%100==0:
+                    self.create_zombi_horizontal()
+            if self.level > 8:
+                if self.counter%100==0:
+                    self.create_zombi_vertical()
             
     def zombi_move(self): #zombi mozgása
         player_pos = self.player.sprite.rect.center
@@ -160,6 +225,19 @@ class Level:
                 self.damage.add(dmg)
                 player.points += random_number
                 player.kills += 1
+
+    def santa_death(self): #játékos halála
+        player = self.player.sprite
+        if player.status == 'death':
+            for zombi in self.enemies:
+                zombi.status='idle'
+                zombi.speed=0
+            self.trees.empty()
+            self.hit.empty()
+            if player.points>self.high_score:
+                self.high_score=player.points
+        if self.counter%200==0:
+            self.restart()
                 
     def create_tree(self): #karácsonyfa létrehozása
         x=random.randint(50,WIDTH-50)
@@ -169,7 +247,7 @@ class Level:
 
     def add_tree(self): #karácsonyfa hozzáadása
         self.tree_counter+=1
-        random_number=random.randint(500,800)
+        random_number=random.randint(300,500)
         if self.counter%random_number==0:
             self.create_tree()
 
@@ -186,19 +264,6 @@ class Level:
                 self.damage.add(dmg)
                 tree.kill()
                 self.level_correction()
-                
-    def santa_death(self): #játékos halála
-        player = self.player.sprite
-        if player.status == 'death':
-            for zombi in self.enemies:
-                zombi.status='idle'
-                zombi.speed=0
-            self.trees.empty()
-            self.hit.empty()
-            if player.points>self.high_score:
-                self.high_score=player.points
-        if self.counter%200==0:
-            self.restart()
                 
     def starter(self,time):#kezdőképernyő
         if self.starting: 
@@ -234,12 +299,12 @@ class Level:
     def statsOnScreen(self): #életerő és pontok kiiratása
         player = self.player.sprite
         font=setup_font(32) #felül megjelenő adatok
-        text=font.render(f'Health: {player.health//10}  Kills: {player.kills}  Points: {player.points}', True, BLUE) #mit
+        text=font.render(f'Health: {player.health//10}  Kills: {player.kills}  Points: {player.points}', True, BLUE)
         text_rect=text.get_rect(center=(WIDTH/2,50)) #hova
         self.display_surface.blit(text,text_rect)
 
         font2=setup_font(18) #alul megjelenő adatok
-        text2=font2.render(f'Saved Christmas Trees: {self.level-1}  Highest: {self.high_score}', True, RED) #mit
+        text2=font2.render(f'Save 10 Christmas Trees to unlock the BOSS: {self.level-1}  Highest Score: {self.high_score}', True, RED)
         text_rect2=text2.get_rect(center=(WIDTH/2,HEIGHT-30))
         self.display_surface.blit(text2,text_rect2)
 
@@ -248,23 +313,23 @@ class Level:
         elapsed_time = (current_time - self.start_time) // 1000  # Másodpercekben
         return elapsed_time
 
-    def display_elapsed_time(self): #eltelt idő kiiratása
-        sec =  self.get_elapsed_time()
+    def display_elapsed_time(self):
+        sec = self.get_elapsed_time()
         minute = sec // 60
         hour = 0
-        if sec == 60:
+        if sec >= 60:  # Corrected condition
             minute += 1
             sec = 0
-        if minute == 60:
+        if minute >= 60:  # Corrected condition
             hour += 1
             minute = 0
         font = setup_font(32)
-        text = font.render(f'{minute}:{sec}', True, BLUE)
+        text = font.render(f'{minute:02}:{sec:02}', True, BLUE)  # Updated format
         text_rect = text.get_rect(center=(WIDTH/2, 100))
         self.display_surface.blit(text, text_rect)
     
     def level_correction(self): #szintlépés
-        self.level +=1 
+        self.level +=10 
         player = self.player.sprite
         if self.level%3==0:
             self.weapon_level+=1
@@ -302,3 +367,5 @@ class Level:
         self.santa_attack(self.level) #játékos támadása
         self.add_tree() #jutalom fák hozzáadása
         self.santa_death() #játékos halála
+        self.add_the_boss() #boss hozzáadása
+
