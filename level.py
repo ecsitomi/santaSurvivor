@@ -119,7 +119,6 @@ class Level:
             boss.status = 'death'
             boss.speed = 0
             boss.direction = pygame.math.Vector2(0, 0)
-            boss.death_animation()
             if self.counter % 200 == 0:
                 self.restart()
 
@@ -361,8 +360,13 @@ class Level:
         player = self.player.sprite
         font=setup_font(32) #felül megjelenő adatok
         text=font.render(f'Health: {player.health//10}  Kills: {player.kills}  Points: {player.points}', True, BLUE)
-        text_rect=text.get_rect(center=(WIDTH/2,50)) #hova
+        text_rect=text.get_rect(center=(WIDTH/2,50))
         self.display_surface.blit(text,text_rect)
+
+        minute, sec = divmod(self.get_elapsed_time(), 60)
+        text0 = font.render(f'{minute:02}:{sec:02}', True, BLUE)
+        text_rect0 = text0.get_rect(center=(WIDTH/2, 100))
+        self.display_surface.blit(text0, text_rect0)
 
         if self.level < 11:
             font2=setup_font(24) #alul megjelenő adatok
@@ -379,25 +383,10 @@ class Level:
     def get_elapsed_time(self): #eltelt idő kiszámolása
         current_time = pygame.time.get_ticks()
         elapsed_time = (current_time - self.start_time) // 1000  # Másodpercekben
-        return elapsed_time
-
-    def display_elapsed_time(self):
-        sec = self.get_elapsed_time()
-        minute = 0
-        hour = 0
-        if sec == 60:
-            minute += 1
-            sec = 0
-        if minute == 60:
-            hour += 1
-            minute = 0
-        font = setup_font(32)
-        text = font.render(f'{minute:02}:{sec:02}', True, BLUE)  # Updated format
-        text_rect = text.get_rect(center=(WIDTH/2, 100))
-        self.display_surface.blit(text, text_rect)
+        return elapsed_time        
     
     def level_correction(self): #szintlépés
-        self.level +=1 
+        self.level +=10
         player = self.player.sprite
         if self.level%3==0:
             self.weapon_level+=1
@@ -417,7 +406,6 @@ class Level:
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
         self.starter(1000) #kezdőképernyő
         self.statsOnScreen() #életerő és pontok kiiratása
-        self.display_elapsed_time() #eltelt idő kiiratása
         self.movement()  #mozgás & ütközések
         self.add_zombi() #zombi hozzáadása
         self.zombi_move() #zombi mozgása

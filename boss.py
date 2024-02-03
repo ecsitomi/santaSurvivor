@@ -59,7 +59,8 @@ class Boss(pygame.sprite.Sprite):
     def death_animation(self): # halál animációja, hogy ne ismétlődjön
         if self.status == 'death' and self.frame_index >= len(self.animations['death']) - 1:
             self.death = True
-            self.frame_index = len(self.animations['death']) - 1
+            #self.frame_index = len(self.animations['death']) - 1
+            self.frame_index = 0
 
     def resize_death(self, size): #halál animáció képeinek átméretezése
         for i in range(len(self.animations['death'])):
@@ -69,7 +70,11 @@ class Boss(pygame.sprite.Sprite):
             self.animations['death'][i] = pygame.transform.scale(self.animations['death'][i], (self.animations['death'][i].get_width() / size, self.animations['death'][i].get_height() / size))
 
     def update(self): #frissítés
-        self.get_status()
-        self.animate()
-        self.death_animation()
-    
+        if not self.death: #ha él
+            self.get_status()
+            self.animate()
+
+            #halál animáció végének vizsgálata
+            if self.status == 'death' and self.frame_index >= len(self.animations['death']) - 1:
+                self.death = True
+                self.frame_index = len(self.animations['death']) - 1  # Állítsd a frame_index-et a death animáció utolsó képére.
