@@ -13,7 +13,7 @@ class Tree(pygame.sprite.Sprite): #fa osztály
         self.down = False
         self.hit=0
 
-    def jump(self,speed,min,max,hit):
+    def jump(self,speed,min,max,hit): #pattogás
         if self.up:
             self.rect.y -= self.jump_speed
             self.jump_speed -= speed
@@ -30,7 +30,7 @@ class Tree(pygame.sprite.Sprite): #fa osztály
                 if self.hit == hit:
                     self.first = False
 
-    def jump_bumb(self,counting): #fa hozzáadása  
+    def jump_bumb(self,counting): #fa koordinálása
         if self.first:
             self.jump(0.5,1,9,3)
         if not self.first:

@@ -1,8 +1,8 @@
 import pygame, random, math
+from settings import *
 from player import Player
 from enemy import Enemy
 from tiles import OtherTile
-from settings import *
 from bullet import Bullet
 from tree import Tree
 from hit import Hit
@@ -13,7 +13,7 @@ from damage import Damage
 class Level:
     def __init__(self, level_data, surface):
         self.starting=True
-        self.display_surface = surface # játékablak a main-ben meghatározottak szerint
+        self.display_surface = surface # játékablak hivatkozva a mainből
         self.counter=0
         self.attack_counter=0
         self.tree_counter=0
@@ -76,13 +76,13 @@ class Level:
         if player.rect.bottom > HEIGHT: 
             player.rect.bottom = HEIGHT 
 
-    def create_zombi_horizontal(self):
+    def create_zombi_horizontal(self): #zombi létrehozása oldalt
         x=random.randint(-50,WIDTH+50)
         y=random.choice([-50,HEIGHT+50])
         zombi=Enemy(x,y)
         self.enemies.add(zombi)
 
-    def create_zombi_vertical(self):
+    def create_zombi_vertical(self): #zombi létrehozása fent/lent
         x=random.choice([-50,WIDTH+50])
         y=random.randint(-50,HEIGHT+50)
         zombi=Enemy(x,y)
@@ -106,7 +106,7 @@ class Level:
             if self.counter%100==0:
                 self.create_zombi_vertical()
             
-    def zombi_move(self):
+    def zombi_move(self): #zombi mozgása
         player_pos = self.player.sprite.rect.center
         for zombi in self.enemies:
             angle = math.atan2(player_pos[1] - zombi.rect.centery, player_pos[0] - zombi.rect.centerx)
@@ -114,7 +114,7 @@ class Level:
             zombi.rect.x += zombi.direction.x * zombi.speed
             zombi.rect.y += zombi.direction.y * zombi.speed
 
-    def zombi_attack(self):
+    def zombi_attack(self): #zombi támadása
         player = self.player.sprite
         for zombi in self.enemies:
             if not zombi.death:
@@ -173,8 +173,9 @@ class Level:
         if self.counter%random_number==0:
             self.create_tree()
 
-        self.trees.draw(self.display_surface)
+        self.trees.draw(self.display_surface) #kirajzolás
 
+        #ütközés
         for tree in self.trees:
             tree.update()
             if tree.rect.colliderect(self.player.sprite.rect):
@@ -186,7 +187,7 @@ class Level:
                 tree.kill()
                 self.level_correction()
                 
-    def santa_death(self):
+    def santa_death(self): #játékos halála
         player = self.player.sprite
         if player.status == 'death':
             for zombi in self.enemies:
@@ -199,17 +200,17 @@ class Level:
         if self.counter%200==0:
             self.restart()
                 
-    def starter(self,time):
-        if self.starting: #kezdőképernyő
-            font=setup_font(111) #főcím betűtípusa
-            text=font.render('Santa Survivor', True, RED) #szövege
-            text_rect=text.get_rect(center=(WIDTH/2,HEIGHT/2)) #helye
-            self.display_surface.blit(text,text_rect) #megjelenítése
-            pygame.display.update() #kép frissítése
-            pygame.time.delay(time) #várakozás 2 ms
+    def starter(self,time):#kezdőképernyő
+        if self.starting: 
+            font=setup_font(111) 
+            text=font.render('Santa Survivor', True, RED) 
+            text_rect=text.get_rect(center=(WIDTH/2,HEIGHT/2)) 
+            self.display_surface.blit(text,text_rect) 
+            pygame.display.update() 
+            pygame.time.delay(time) 
             self.starting=False    
 
-    def restart(self):
+    def restart(self): #újraindítás
         player = self.player.sprite
         if player.death:
             self.counter=0
@@ -232,22 +233,22 @@ class Level:
     
     def statsOnScreen(self): #életerő és pontok kiiratása
         player = self.player.sprite
-        font=setup_font(32) #betűtípus és méret
+        font=setup_font(32) #felül megjelenő adatok
         text=font.render(f'Health: {player.health//10}  Kills: {player.kills}  Points: {player.points}', True, BLUE) #mit
         text_rect=text.get_rect(center=(WIDTH/2,50)) #hova
         self.display_surface.blit(text,text_rect)
 
-        font2=setup_font(18)
+        font2=setup_font(18) #alul megjelenő adatok
         text2=font2.render(f'Saved Christmas Trees: {self.level-1}  Highest: {self.high_score}', True, RED) #mit
         text_rect2=text2.get_rect(center=(WIDTH/2,HEIGHT-30))
         self.display_surface.blit(text2,text_rect2)
 
-    def get_elapsed_time(self):
+    def get_elapsed_time(self): #eltelt idő kiszámolása
         current_time = pygame.time.get_ticks()
         elapsed_time = (current_time - self.start_time) // 1000  # Másodpercekben
         return elapsed_time
 
-    def display_elapsed_time(self):
+    def display_elapsed_time(self): #eltelt idő kiiratása
         sec =  self.get_elapsed_time()
         minute = sec // 60
         hour = 0
@@ -257,12 +258,12 @@ class Level:
         if minute == 60:
             hour += 1
             minute = 0
-        font = setup_font(32)  # Válaszd meg a megfelelő betűtípust és méretet
+        font = setup_font(32)
         text = font.render(f'{minute}:{sec}', True, BLUE)
-        text_rect = text.get_rect(center=(WIDTH/2, 100))  # Válaszd meg a megfelelő helyet
+        text_rect = text.get_rect(center=(WIDTH/2, 100))
         self.display_surface.blit(text, text_rect)
     
-    def level_correction(self):
+    def level_correction(self): #szintlépés
         self.level +=1 
         player = self.player.sprite
         if self.level%3==0:
@@ -279,59 +280,25 @@ class Level:
     #futtatás
     def run(self):
         self.display_surface.blit(self.bg_surf, self.bg_rect)  # háttérkép kirajzolása
-        self.starter(1000)
+        self.starter(1000) #kezdőképernyő
         self.statsOnScreen() #életerő és pontok kiiratása
-        self.display_elapsed_time()
+        self.display_elapsed_time() #eltelt idő kiiratása
         self.enemies.update()  # ellenség update
         self.enemies.draw(self.display_surface)  # ellenség kirajzolása
         self.player.update()  # játékos frissítése
         self.player.draw(self.display_surface)  # játékos kirajzolása a (játékablakban)
-        self.bullets.update()
-        self.bullets.draw(self.display_surface)
-        self.hit.update()
-        self.hit.draw(self.display_surface)
-        self.bomb.update()
-        self.bomb.draw(self.display_surface)
-        self.damage.update()
-        self.damage.draw(self.display_surface)
+        self.bullets.update() #golyók frissítése
+        self.bullets.draw(self.display_surface) #golyók kirajzolása
+        self.hit.update() #találat frissítése
+        self.hit.draw(self.display_surface) #találat kirajzolása
+        self.bomb.update() #robbanás frissítése
+        self.bomb.draw(self.display_surface) #robbanás kirajzolása
+        self.damage.update() #sebzés frissítése
+        self.damage.draw(self.display_surface) #sebzés kirajzolása
         self.movement()  #mozgás & ütközések
         self.add_zombi() #zombi hozzáadása
         self.zombi_move() #zombi mozgása
         self.zombi_attack() #zombi támadása
         self.santa_attack(self.level) #játékos támadása
         self.add_tree() #jutalom fák hozzáadása
-        self.santa_death()
-        
-        
-        
-        #AZ ÜTKÖZÉS HIBÁS,EZÉRT A CSEMPÉKET SEM RAJZOLJUK KI
-        #self.tile_collision() #ütközések a csempékkel
-        #self.other_tiles.update()  # díszítőelemek frissítése
-        #self.other_tiles.draw(self.display_surface)  # díszítőelemek kirajzolása
-
-    ''' #HIBÁS!!!!!!!!!!!!!!!!!!
-    def tile_collision(self): #ütközések a csempékkel
-        player=self.player.sprite #játékos sprite
-        
-        for sprite in self.other_tiles.sprites():
-            if sprite.rect.colliderect(player.rect): #ha ütközik az egyik csempével
-
-                if player.direction.x > 0 and player.rect.right > sprite.rect.left and not player.stop_horizontal and player.facing_right: #JOBBRA
-                    player.rect.right -= player.speed
-                    player.stop_vertical = True
-
-                elif player.direction.x < 0 and player.rect.left < sprite.rect.right and not player.stop_horizontal and not player.facing_right: #BALRA
-                    player.rect.left += player.speed
-                    player.stop_vertical = True
-
-                if player.direction.y > 0 and player.rect.bottom > sprite.rect.top and not player.stop_vertical: #LE
-                    player.rect.bottom -= player.speed
-                    player.stop_horizontal = True
-
-                elif player.direction.y < 0 and player.rect.top < sprite.rect.bottom and not player.stop_vertical: #FEÉ
-                    player.rect.top += player.speed
-                    player.stop_horizontal = True
-                else:
-                    player.stop_vertical = False
-                    player.stop_horizontal = False
-        '''
+        self.santa_death() #játékos halála

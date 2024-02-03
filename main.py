@@ -4,13 +4,13 @@ if __name__ == "__main__":
     from level import Level
 
     #inicializálás
-    pygame.init() #játék
-    pygame.mixer.init() #hang
-    screen = pygame.display.set_mode((WIDTH, HEIGHT)) #ablak
-    pygame.display.set_caption('Santa Survivor') #cím
-    clock = pygame.time.Clock() #időzítő
+    pygame.init()
+    pygame.mixer.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption('Santa Survivor') 
+    clock = pygame.time.Clock()
 
-    level=Level(level_map,screen) #szint példányosítása
+    level=Level(level_map,screen)
 
     #futtatás
     running = True
@@ -19,7 +19,6 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
 
-        #játék futtatása
         level.run()
 
         #képfrissítés
