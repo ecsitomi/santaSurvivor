@@ -23,7 +23,8 @@ class Level:
         self.high_score=0
         self.start_time = pygame.time.get_ticks() 
 
-        self.player = pygame.sprite.GroupSingle() #csoportok amibe jönnek a sprite-ok
+        #sprite csoportok
+        self.player = pygame.sprite.GroupSingle() 
         self.enemies = pygame.sprite.Group()
         self.other_tiles = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
@@ -32,7 +33,6 @@ class Level:
         self.bomb = pygame.sprite.Group()
         self.damage = pygame.sprite.Group()
 
-        # háttérkép betöltése és méretezése
         self.setup_BG(BG_IMG) # háttérkép betöltése
         self.setup_level(level_data) # pálya betöltése
 
@@ -141,7 +141,7 @@ class Level:
                 for bullet in self.bullets:
                     bullet.kill()
             if len(self.enemies)!=0:
-                if self.attack_counter % 70-2*weapon_level == 0:
+                if self.attack_counter % 70-3*weapon_level == 0:
                     for _ in range(weapon_level):
                         target = random.choice(self.enemies.sprites()) #véletlen célpont, folyton frissül
                         angle = math.atan2(target.rect.centery - player.rect.centery, target.rect.centerx - player.rect.centerx) #szög folyamatos frissítése
@@ -271,7 +271,8 @@ class Level:
                 self.weapon_level=4
         if self.level%2==0:
             player.speed+=1
-            #player.health+=20
+            if player.speed>13:
+                player.speed=13
         if player.health>1000:
             player.health=1000      
     
